@@ -1,0 +1,26 @@
+{
+  "name": "attendance-bot",
+  "version": "1.0.0",
+  "description": "A telegram bot that takes and stores attendance",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rotimi-Best/attendance-bot.git"
+  },
+  "keywords": [
+    "attendance",
+    "telegram",
+    "bot",
+    "register",
+    "university"
+  ],
+  "author": "Rotimi Best",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rotimi-Best/attendance-bot/issues"
+  },
+  "homepage": "https://github.com/Rotimi-Best/attendance-bot#readme"
+}
