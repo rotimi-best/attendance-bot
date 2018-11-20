@@ -19,7 +19,7 @@ class StartController extends TelegramBaseController {
       $.sendMessage(
         `Welcome ${
           user[0].name
-        }.\n\nTo take a group attendance use the /attendance command`,
+        }.\n\nTo take a group attendance use the /newattendance command`,
         {
           reply_markup: JSON.stringify({
             remove_keyboard: true
@@ -31,13 +31,13 @@ class StartController extends TelegramBaseController {
 
     $.sendMessage(`Hi there, can I call you ${userName}?`, {
       reply_markup: JSON.stringify({
-        keyboard: [[{ text: "Yes 👍🏼" }], [{ text: "No 👎" }]],
+        keyboard: [[{ text: "Yes 👍" }], [{ text: "No 👎" }]],
         one_time_keyboard: true
       })
     });
 
     $.waitForRequest.then(async $ => {
-      if ($.message.text === "Yes 👍🏼") {
+      if ($.message.text === "Yes 👍") {
         $.sendMessage(
           `Okay, Thanks ${userName}.\nTo begin taking attendance you need to create a group. Use the /newgroup command for that`,
           {

@@ -3,6 +3,8 @@ const TextCommand = Telegram.TextCommand;
 require("dotenv").config();
 
 const StartController = require("./Controllers/startController");
+const GroupController = require("./Controllers/groupController");
+const AttendanceController = require("./Controllers/attendanceController");
 const HelpController = require("./Controllers/helpController");
 
 const bot = new Telegram.Telegram(process.env.API_KEY, {
@@ -15,14 +17,15 @@ const bot = new Telegram.Telegram(process.env.API_KEY, {
 
 bot.router
   .when(new TextCommand("/start", "startCommand"), new StartController())
-  .when(new TextCommand("/newgroup", "newGroupCommand"), new StartController())
-  .when(new TextCommand("/mygroups", "myGroupsCommand"), new StartController())
-  .when(new TextCommand("/attendance", "attendanceCommand"), new StartController())
-  .when(new TextCommand("/help", "helpCommand"), new HelpController())
-  .when(new TextCommand("/addstudent", "addStudentCommand"), new StartController())
-  .when(new TextCommand("/deletgroup", "deletGroupCommand"), new StartController())
+  .when(new TextCommand("/newgroup", "addGroupCommand"), new GroupController())
+  .when(new TextCommand("/mygroups", "getGroupCommand"), new GroupController())
+  .when(new TextCommand("/rename", "updateGroupCommand"), new GroupController())
+  .when(new TextCommand("/addstudent", "updateGroupCommand"), new GroupController())
+  .when(new TextCommand("/deletegroup", "deleteGroupCommand"), new GroupController())
+  .when(new TextCommand("/newattendance", "addAttendanceCommand"), new AttendanceController())
   .when(
-    new TextCommand("/spreadsheetlink", "spreadsheetLinkCommand"),
-    new StartController()
+    new TextCommand("/viewattendance", "getAttendanceCommand"),
+    new AttendanceController()
   )
-  .when(new TextCommand("/setname", "setNameCommand"), new StartController());
+  .when(new TextCommand("/editattendance", "updateAttendanceCommand"), new AttendanceController())
+  .when(new TextCommand("/help", "helpCommand"), new HelpController())

@@ -3,14 +3,48 @@ const TelegramBaseController = Telegram.TelegramBaseController;
 const db = require("../Db");
 
 class GroupController extends TelegramBaseController {
+
+
   /**
-   * Scope of the message
+   * Create a new group
    * @param {Scope} $
    */
+    async addGroupHandler ($) {
+      $.sendMessage(`${$.message.text} is still under production`);
+    }
+
+  /**
+   * Get group
+   * @param {Scope} $
+   */
+  async getGroupHandler ($) {
+    $.sendMessage(`${$.message.text} is still under production`);
+  }
+
+  /**
+   * Update with some params
+   * @param {Scope} $
+   */
+  async updateGroupHandler ($) {
+    $.sendMessage(`${$.message.text} is still under production`);
+  }
+
+  /**
+   * Delete a group
+   * @param {Scope} $
+   */
+  async deleteGroupHandler ($) {
+    $.sendMessage(`${$.message.text} is still under production`);
+  }
+
+
 
   get routes() {
     return {
-      startCommand: "startHandler"
+      addGroupCommand: "addGroupHandler",
+      getGroupCommand: "getGroupHandler",
+      updateGroupCommand: "updateGroupHandler",
+      deleteGroupCommand: "deleteGroupHandler"
     };
   }
 }

@@ -9,7 +9,7 @@ class HelpController extends TelegramBaseController {
    */
   helpHandler($) {
     $.sendMessage(
-      `You can control me by sending these commands:\n\n/newgroup - create a new group (like a class with students)\n/mygroups - edit your groups\n/attendance - take a class attendance\n/help - get help from my creator\n\n*Edit Group*\n/setname - change a group's name\n/addstudent - add student(s) to a group\n/spreadsheetlink - view group in spreadsheet\n/deletegroup - delete a group\n\nStill confusing? Talk to my [creator](https://t.me/living_logos)`,
+      `You can control me by sending these commands:\n\n/newgroup - create a new group (like a class with students)\n/mygroups - edit a group\n/help - get help\n\nEdit Group\n/rename - change a group's name\n/addstudent - add student(s) to a group\n/deletegroup - delete a group\n\nAttendance\n/newattendance - take a class attendance\n/editattendance - repeat attendance\n/viewallattendance - view register\n\nStill confusing? Talk to my [creator](https://t.me/living_logos)`,
       { parse_mode: "Markdown", disable_web_page_preview: true }
     );
   }
