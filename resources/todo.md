@@ -28,3 +28,10 @@
     - write - write readme doc for project
 
 ## IMPLEMENTATION
+
+1. newgroup
+   - Make a form
+   - ask for name of the group
+   - ask for students name, they must me seperated by commas
+   - get the result of form and add a owner object with 2 fields, name and telegram id
+   - Save this in the database
