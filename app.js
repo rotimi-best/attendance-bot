@@ -1,58 +1,28 @@
-const Telegraf = require('telegraf');
-const Extra = require('telegraf/extra')
-const Markup = require('telegraf/markup')
-const db = require('./Db');
-require('dotenv').config();
+const Telegram = require("telegram-node-bot");
+const TextCommand = Telegram.TextCommand;
+require("dotenv").config();
 
-const bot = new Telegraf(process.env.BOT_TOKEN)
+const StartController = require("./Controllers/startController");
+const HelpController = require("./Controllers/helpController");
 
-bot.use(Telegraf.log())
-
-const welcomeMessage = (name) => {
-    return `Welcome ${name}. I will help you take your attendance better`;
-}
-
-bot.start((ctx) => {
-    const userId = ctx.from.id;
-    const firstName = ctx.from.first_name;
-    db.insert({id: userId, name: firstName });
-    ctx.reply(welcomeMessage(firstName))
+const bot = new Telegram.Telegram(process.env.API_KEY, {
+  workers: 1,
+  webAdmin: {
+    port: 8081,
+    host: "127.0.0.1"
+  }
 });
 
-const keyboard = Markup.inlineKeyboard([
-    Markup.callbackButton('❤️', 'http://telegraf.js.org'),
-    Markup.callbackButton('Delete', 'delete')
-]);
-
-// bot.on('message', (ctx) => ctx.telegram.sendCopy(ctx.from.id, ctx.message, Extra.markup(keyboard)));
-
-bot.hears(/new/, (ctx) => {
-    ctx.reply('Alright', Extra.markup(keyboard));
-    
-});
-
-bot.command('random', (ctx) => {
-    return ctx.reply('random example',
-      Markup.inlineKeyboard([
-        Markup.removeKeyboard('Coke', 'Coke'),
-        Markup.removeKeyboard('Dr Pepper', 'Dr Pepper', Math.random() > 0.5),
-        Markup.removeKeyboard('Pepsi', 'Pepsi')
-      ]).extra()
-    )
-})
-
-bot.hears(/\/wrap (\d+)/, (ctx) => {
-    return ctx.reply('Keyboard wrap', Extra.markup(
-      Markup.keyboard(['one', 'two', 'three', 'four', 'five', 'six'], {
-        columns: parseInt(ctx.match[2])
-      })
-    ))
-  })
-
-bot.action('Dr Pepper', (ctx, next) => {
-    return ctx.reply('👍').then(() => next())
-})
-
-// bot.help((ctx) => ctx.reply('Send me a sticker'))
-// bot.hears('hi', (ctx) => ctx.reply('Hey there'))
-bot.startPolling()
+bot.router
+  .when(new TextCommand("/start", "startCommand"), new StartController())
+  .when(new TextCommand("/newgroup", "startCommand"), new StartController())
+  .when(new TextCommand("/mygroups", "startCommand"), new StartController())
+  .when(new TextCommand("/attendance", "startCommand"), new StartController())
+  .when(new TextCommand("/help", "helpCommand"), new HelpController())
+  .when(new TextCommand("/addstudent", "startCommand"), new StartController())
+  .when(new TextCommand("/deletgroup", "startCommand"), new StartController())
+  .when(
+    new TextCommand("/spreadsheetlink", "startCommand"),
+    new StartController()
+  )
+  .when(new TextCommand("/setname", "startCommand"), new StartController());
