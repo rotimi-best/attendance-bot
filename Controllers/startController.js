@@ -2,6 +2,9 @@ const Telegram = require("telegram-node-bot");
 const TelegramBaseController = Telegram.TelegramBaseController;
 const UserController = require("./userController");
 const userController = new UserController();
+const { 
+  emojis: { wave, thumbsUp, thumbsDown, ok } 
+} = require('../modules');
 
 class StartController extends TelegramBaseController {
   /**
@@ -19,7 +22,7 @@ class StartController extends TelegramBaseController {
       $.sendMessage(
         `Welcome ${
           user[0].name
-        }.\n\nTo take a group attendance use the /newattendance command`,
+        } ${wave}.\n\nTo take a group attendance use the /newattendance command`,
         {
           reply_markup: JSON.stringify({
             remove_keyboard: true
@@ -29,17 +32,17 @@ class StartController extends TelegramBaseController {
       return;
     }
 
-    $.sendMessage(`Hi there, can I call you ${userName}?`, {
+    $.sendMessage(`Hi there! ${wave} Can I call you ${userName}?`, {
       reply_markup: JSON.stringify({
-        keyboard: [[{ text: "Yes 👍" }], [{ text: "No 👎" }]],
+        keyboard: [[{ text: `Yes ${thumbsUp}` }], [{ text: `No ${thumbsDown}` }]],
         one_time_keyboard: true
       })
     });
 
     $.waitForRequest.then(async $ => {
-      if ($.message.text === "Yes 👍") {
+      if ($.message.text === `Yes ${thumbsUp}`) {
         $.sendMessage(
-          `Okay, Thanks ${userName}.\nTo begin taking attendance you need to create a group. Use the /newgroup command for that`,
+          `Okay, Thanks ${userName} ${ok}.\n\nTo begin taking attendance you need to create a group. Use the /newgroup command for that.`,
           {
             reply_markup: JSON.stringify({
               remove_keyboard: true
@@ -47,13 +50,13 @@ class StartController extends TelegramBaseController {
           }
         );
         await this.saveNewUser(userName, telegramId);
-      } else if ($.message.text === "No 👎") {
+      } else if ($.message.text === `No ${thumbsDown}`) {
         $.sendMessage(`What should I then call you?`);
 
         $.waitForRequest.then(async $ => {
           userName = $.message.text;
           $.sendMessage(
-            `Okay, Thanks ${userName}.\nTo get started click /newgroup to create a new group`,
+            `Okay, Thanks ${userName} ${ok}.\n\nTo begin taking attendance you need to create a group. Use the /newgroup command for that.`,
             {
               reply_markup: JSON.stringify({
                 remove_keyboard: true

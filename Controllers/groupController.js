@@ -10,7 +10,7 @@ class GroupController extends TelegramBaseController {
    * @param {Scope} $
    */
     async addGroupHandler ($) {
-      $.sendMessage(`${$.message.text} is still under production`);
+      //Form to create  a new group
     }
 
   /**

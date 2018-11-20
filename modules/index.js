@@ -108,11 +108,30 @@ const reduceDay = (value, date) => {
     date === undefined ? today.setDate(today.getDate() + value) : today.setDate(parseInt(date.replace(/\d+(-)\d+(-)(0)/g, '')) + value)
     return past;
 }
-
+const emojis = {
+    'smile' : '🙂',
+    'sad' : '😞',
+    'coolGlasses' : '😎',
+    'oneEye' : '😉',
+    'typing' : '📝',
+    'help' : '🔑',
+    'byAlphabet' : '🔤',
+    'search' : '🔎',
+    chat : '🗣👂',
+    fingerRight : '👉',
+    save : '💾',
+    fingerDown : '👇',
+    byNumber : '🔢',
+    wave: '👋',
+    thumbsUp: '👍',
+    thumbsDown: '👎',
+    ok: '👌'
+};
 
 module.exports = {
-    date: date,
-    time: time,
-    reduceDay: reduceDay,
-    increaseDay: increaseDay
+    date,
+    time,
+    emojis,
+    reduceDay,
+    increaseDay
 }
