@@ -7,6 +7,12 @@ const {
 } = require('../modules');
 
 class StartController extends TelegramBaseController {
+  constructor ($) {
+    super($);
+    this.nameOfUser = '';
+    // console.log($)
+    // this.telegramIdOfUser = '';
+  }
   /**
    * Scope of the message
    * @param {Scope} $
@@ -19,10 +25,9 @@ class StartController extends TelegramBaseController {
 
     const user = await userController.getUser({ telegramId: telegramId });
     if (user.length) {
+      this.nameOfUser = user[0].name
       $.sendMessage(
-        `Welcome ${
-          user[0].name
-        } ${wave}.\n\nTo take a group attendance use the /newattendance command`,
+        `Welcome ${this.nameOfUser} ${wave}.\n\nTo take a group attendance use the /newattendance command`,
         {
           reply_markup: JSON.stringify({
             remove_keyboard: true
@@ -69,27 +74,28 @@ class StartController extends TelegramBaseController {
       }
     });
   }
+  testHandler () {
+    console.log(this.nameOfUser);
+  }
 
   /**
-   *
+   * @param {String} userName Name of the user
+   * @param {Number} telegramId Telegram ID of user
    */
   async saveNewUser(userName, telegramId) {
-    const user = await userController.getUser({ telegramId: telegramId });
-
-    if (!user.length) {
-      console.log("A new user was added");
-      await userController.addUser({
-        name: userName,
-        telegramId: telegramId
-      });
-    } else {
-      console.log("This user is already in the db");
-    }
+    console.log("A new user was added");
+    
+    await userController.addUser({
+      name: userName,
+      telegramId: telegramId
+    });
+    this.nameOfUser = userName;
   }
 
   get routes() {
     return {
-      startCommand: "startHandler"
+      startCommand: "startHandler",
+      testCommand: "testHandler"
     };
   }
 }

@@ -29,3 +29,4 @@ bot.router
   )
   .when(new TextCommand("/editattendance", "updateAttendanceCommand"), new AttendanceController())
   .when(new TextCommand("/help", "helpCommand"), new HelpController())
+  .when(new TextCommand("/test", "testCommand"), new StartController())
