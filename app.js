@@ -15,14 +15,14 @@ const bot = new Telegram.Telegram(process.env.API_KEY, {
 
 bot.router
   .when(new TextCommand("/start", "startCommand"), new StartController())
-  .when(new TextCommand("/newgroup", "startCommand"), new StartController())
-  .when(new TextCommand("/mygroups", "startCommand"), new StartController())
-  .when(new TextCommand("/attendance", "startCommand"), new StartController())
+  .when(new TextCommand("/newgroup", "newGroupCommand"), new StartController())
+  .when(new TextCommand("/mygroups", "myGroupsCommand"), new StartController())
+  .when(new TextCommand("/attendance", "attendanceCommand"), new StartController())
   .when(new TextCommand("/help", "helpCommand"), new HelpController())
-  .when(new TextCommand("/addstudent", "startCommand"), new StartController())
-  .when(new TextCommand("/deletgroup", "startCommand"), new StartController())
+  .when(new TextCommand("/addstudent", "addStudentCommand"), new StartController())
+  .when(new TextCommand("/deletgroup", "deletGroupCommand"), new StartController())
   .when(
-    new TextCommand("/spreadsheetlink", "startCommand"),
+    new TextCommand("/spreadsheetlink", "spreadsheetLinkCommand"),
     new StartController()
   )
-  .when(new TextCommand("/setname", "startCommand"), new StartController());
+  .when(new TextCommand("/setname", "setNameCommand"), new StartController());
