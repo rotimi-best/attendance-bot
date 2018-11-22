@@ -20,34 +20,53 @@ class GroupController extends TelegramBaseController {
     //Get name
     const telegramId = $.message.chat.id;
     const userName = await this.getUserName(telegramId);
-
+    const ifgroup = await getGroupHandler($, "Group 1");
+    console.log(ifgroup);
     //Form to create  a new group
-    const form = this.makeNewGroupFrom();
-    $.runForm(form, result => {
-      console.log(result);
-    });
+    // const form = this.makeNewGroupFrom($);
+    // $.runForm(form, result => {
+    //   console.log(result);
+    // });
   }
 
   /**
    * Get group
-   * @param {Scope} $
+   * @param {Scope} $ Scope of message
+   * @param {String} name Name of the group
    */
   async getGroupHandler($, name) {
+    const telegramId = $.message.chat.id;
+    let userNameAlreadyExist = null;
+
     //Check if a particular group exists
     if (name) {
-      const group = await db.find({ collection: GROUPS, name });
-      let userNameAlreadyExist = null;
+      const group = await db.find({
+        collection: GROUPS,
+        name,
+        owner: { telegramId }
+      });
       if (group.length > 0) return (userNameAlreadyExist = true);
       else return (userNameAlreadyExist = false);
     }
+
     //Find all groups created by this particular user
-    const telegramId = $.message.chat.id;
-    const group = await db.find({ collection: GROUPS, telegramId });
+    const groups = await db.find({ collection: GROUPS, owner: { telegramId } });
     const userName = await this.getUserName(telegramId);
 
-    if (group.length > 0) {
+    if (groups.length > 0) {
       // continue here
-      $.sendMessage(`Here you go ${userName}:`)
+      const buttons = [];
+      groups.forEach(val => {
+        const button = [{ text: val.name }];
+        buttons.push(button);
+      });
+
+      $.sendMessage(`Here you go ${userName}:`, {
+        reply_markup: JSON.stringify({
+          keyboard: buttons,
+          one_time_keyboard: true
+        })
+      });
     }
   }
 
@@ -79,14 +98,15 @@ class GroupController extends TelegramBaseController {
     return this.userObj;
   }
 
-  makeNewGroupFrom() {
+  makeNewGroupFrom($) {
     return {
       name: {
         q: "Alright, new group. What would be the name of your group?",
-        error: "Sorry, that's not a valid name or it has been taken",
+        error: "Sorry, try again the group name has already been taken",
         validator: async (message, callback) => {
-          const user = await userController.getUser({});
-          if (message.text) {
+          const userReply = message.text;
+          const ifGroupExist = await this.getGroupHandler($, userReply);
+          if (!ifGroupExist) {
             callback(true, message.text);
             return;
           }
@@ -98,7 +118,7 @@ class GroupController extends TelegramBaseController {
         q: "Send me your age",
         error: "sorry, wrong input",
         validator: (message, callback) => {
-          if (message.text && IsNumeric(message.text)) {
+          if (message.text && NaN(message.text)) {
             callback(true, toInt(message.text));
             return;
           }
