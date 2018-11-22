@@ -1,7 +1,7 @@
 module.exports = {
-    DB_COLLECTIONS: {
-        USERS: users,
-        GROUPS: groups,
-        ATTENDANCES: attendances
-    }
-}
+  DB_COLLECTIONS: {
+    USERS: "users",
+    GROUPS: "groups",
+    ATTENDANCES: "attendances"
+  }
+};
