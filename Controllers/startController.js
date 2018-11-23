@@ -2,14 +2,14 @@ const Telegram = require("telegram-node-bot");
 const TelegramBaseController = Telegram.TelegramBaseController;
 const UserController = require("./userController");
 const userController = new UserController();
-const { 
-  emojis: { wave, thumbsUp, thumbsDown, ok } 
-} = require('../modules');
+const {
+  emojis: { wave, thumbsUp, thumbsDown, ok }
+} = require("../modules");
 
 class StartController extends TelegramBaseController {
-  constructor ($) {
+  constructor($) {
     super($);
-    this.nameOfUser = '';
+    this.nameOfUser = "";
     // console.log($)
     // this.telegramIdOfUser = '';
   }
@@ -25,9 +25,11 @@ class StartController extends TelegramBaseController {
 
     const user = await userController.getUser({ telegramId: telegramId });
     if (user.length) {
-      this.nameOfUser = user[0].name
+      this.nameOfUser = user[0].name;
       $.sendMessage(
-        `Welcome ${this.nameOfUser} ${wave}.\n\nTo take a group attendance use the /newattendance command`,
+        `Welcome back ${
+          this.nameOfUser
+        } ${wave}.\n\nTo take a group attendance use the /newattendance command`,
         {
           reply_markup: JSON.stringify({
             remove_keyboard: true
@@ -39,7 +41,10 @@ class StartController extends TelegramBaseController {
 
     $.sendMessage(`Hi there! ${wave} Can I call you ${userName}?`, {
       reply_markup: JSON.stringify({
-        keyboard: [[{ text: `Yes ${thumbsUp}` }], [{ text: `No ${thumbsDown}` }]],
+        keyboard: [
+          [{ text: `Yes ${thumbsUp}` }],
+          [{ text: `No ${thumbsDown}` }]
+        ],
         one_time_keyboard: true
       })
     });
@@ -74,7 +79,7 @@ class StartController extends TelegramBaseController {
       }
     });
   }
-  testHandler () {
+  testHandler() {
     console.log(this.nameOfUser);
   }
 
@@ -84,7 +89,7 @@ class StartController extends TelegramBaseController {
    */
   async saveNewUser(userName, telegramId) {
     console.log("A new user was added");
-    
+
     await userController.addUser({
       name: userName,
       telegramId: telegramId

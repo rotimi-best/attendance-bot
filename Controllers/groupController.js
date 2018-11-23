@@ -23,7 +23,7 @@ class GroupController extends TelegramBaseController {
     //Get name
     const telegramId = $.message.chat.id;
     const userName = await this.getUserName(telegramId);
-    const ifgroup = await getGroupHandler($, "Group 1");
+    const ifgroup = await this.getGroupHandler($, "Group 1");
     console.log(ifgroup);
     //Form to create  a new group
     const form = this.makeNewGroupFrom($);
