@@ -40,12 +40,12 @@ class GroupController extends TelegramBaseController {
 
     //Check if a particular group exists
     if (name) {
-      const group = await db.find({
+      const groups = await db.find({
         collection: GROUPS,
         name,
         owner: { telegramId }
       });
-      if (group.length > 0) return (userNameAlreadyExist = true);
+      if (groups.length > 0) return (userNameAlreadyExist = true);
       else return (userNameAlreadyExist = false);
     }
 
@@ -54,10 +54,10 @@ class GroupController extends TelegramBaseController {
     const userName = await this.getUserName(telegramId);
 
     if (groups.length > 0) {
-      // continue here
       const buttons = [];
-      groups.forEach(val => {
-        const button = [{ text: val.name }];
+
+      groups.forEach(({ name }) => {
+        const button = [{ text: name }];
         buttons.push(button);
       });
 
@@ -67,6 +67,10 @@ class GroupController extends TelegramBaseController {
           one_time_keyboard: true
         })
       });
+    } else {
+      $.sendMessage(
+        `Sorry ${userName}, you havn't created any group yet, use the /newgroup command to create one.`
+      );
     }
   }
 
@@ -102,22 +106,29 @@ class GroupController extends TelegramBaseController {
     return {
       name: {
         q: "Alright, new group. What would be the name of your group?",
-        error: "Sorry, try again the group name has already been taken",
+        error:
+          "Sorry try again, name has already been used and must begin with a word.",
         validator: async (message, callback) => {
           const userReply = message.text;
+          const testIfBeginsWithWord = /^[A-z a-z]/g.test(userReply);
+
+          if (!testIfBeginsWithWord) callback(false);
+
           const ifGroupExist = await this.getGroupHandler($, userReply);
+
           if (!ifGroupExist) {
             callback(true, message.text);
             return;
           }
-
           callback(false);
         }
       },
       age: {
-        q: "Send me your age",
-        error: "sorry, wrong input",
+        q:
+          "Great. Now send me the names of your students seperated with a comma, like Bill Gates, Steve Jobs, Barak Obama, Joshua Selman",
+        error: "Sorry, make sure it is seperated with a comma",
         validator: (message, callback) => {
+          const userReply = message.text;
           if (message.text && NaN(message.text)) {
             callback(true, toInt(message.text));
             return;
