@@ -6,6 +6,9 @@ const db = require("../Db");
 const {
   DB_COLLECTIONS: { USERS, GROUPS, ATTENDANCES }
 } = require("../helpers/constants");
+const {
+  emojis: { wave, thumbsUp, thumbsDown, ok }
+} = require("../modules");
 
 class GroupController extends TelegramBaseController {
   constructor() {
@@ -23,10 +26,22 @@ class GroupController extends TelegramBaseController {
     const ifgroup = await getGroupHandler($, "Group 1");
     console.log(ifgroup);
     //Form to create  a new group
-    // const form = this.makeNewGroupFrom($);
-    // $.runForm(form, result => {
-    //   console.log(result);
-    // });
+    const form = this.makeNewGroupFrom($);
+    $.runForm(form, result => {
+      $.sendMessage(
+        `Great ${userName}, Your group has successfully being created.\n\nDo you want to take attendance now?`,
+        {
+          reply_markup: JSON.stringify({
+            keyboard: [
+              [{ text: `Yes ${thumbsUp}` }],
+              [{ text: `No ${thumbsDown}` }]
+            ],
+            one_time_keyboard: true
+          })
+        }
+      );
+      console.log(result);
+    });
   }
 
   /**
@@ -110,9 +125,8 @@ class GroupController extends TelegramBaseController {
           "Sorry try again, name has already been used and must begin with a word.",
         validator: async (message, callback) => {
           const userReply = message.text;
-          const testIfBeginsWithWord = /^[A-z a-z]/g.test(userReply);
 
-          if (!testIfBeginsWithWord) callback(false);
+          if (!/^[A-z a-z]/g.test(userReply)) callback(false);
 
           const ifGroupExist = await this.getGroupHandler($, userReply);
 
@@ -126,11 +140,16 @@ class GroupController extends TelegramBaseController {
       age: {
         q:
           "Great. Now send me the names of your students seperated with a comma, like Bill Gates, Steve Jobs, Barak Obama, Joshua Selman",
-        error: "Sorry, make sure it is seperated with a comma",
+        error:
+          "Sorry, make sure it is seperated with a comma, be words only and be more than one student",
         validator: (message, callback) => {
           const userReply = message.text;
-          if (message.text && NaN(message.text)) {
-            callback(true, toInt(message.text));
+          if (!/^[A-z a-z]/g.test(userReply)) callback(false);
+
+          const students = userReply.split(",");
+
+          if (students && students.length) {
+            callback(true, students);
             return;
           }
 
