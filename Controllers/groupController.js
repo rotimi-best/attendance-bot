@@ -2,12 +2,13 @@ const Telegram = require("telegram-node-bot");
 const TelegramBaseController = Telegram.TelegramBaseController;
 const UserController = require("./userController");
 const userController = new UserController();
+const { addGroup } = require("../Db/Groups");
 const db = require("../Db");
 const {
   DB_COLLECTIONS: { USERS, GROUPS, ATTENDANCES }
 } = require("../helpers/constants");
 const {
-  emojis: { wave, thumbsUp, thumbsDown, ok }
+  emojis: { thumbsUp, thumbsDown }
 } = require("../modules");
 
 class GroupController extends TelegramBaseController {
@@ -15,6 +16,7 @@ class GroupController extends TelegramBaseController {
     super();
     this.userObj = { name: "", telegramId: 0 };
   }
+
   /**
    * Create a new group
    * @param {Scope} $
@@ -22,25 +24,26 @@ class GroupController extends TelegramBaseController {
   async addGroupHandler($) {
     //Get name
     const telegramId = $.message.chat.id;
-    const userName = await this.getUserName(telegramId);
-    const ifgroup = await this.getGroupHandler($, "Group 1");
+    const { name } = await this.getUserName(telegramId);
+    const ifgroup = await this.getGroupHandler($, {
+      useName: groups,
+      telegramId
+    });
     console.log(ifgroup);
     //Form to create  a new group
     const form = this.makeNewGroupFrom($);
-    $.runForm(form, result => {
-      $.sendMessage(
-        `Great ${userName}, Your group has successfully being created.\n\nDo you want to take attendance now?`,
-        {
-          reply_markup: JSON.stringify({
-            keyboard: [
-              [{ text: `Yes ${thumbsUp}` }],
-              [{ text: `No ${thumbsDown}` }]
-            ],
-            one_time_keyboard: true
-          })
+    $.runForm(form, async ({ groupName, students }) => {
+      const groupData = {
+        name: groupName,
+        students: students,
+        owner: {
+          name,
+          telegramId
         }
-      );
-      console.log(result);
+      };
+      $.sendMessage(`Great ${name}, Your group has successfully been created.`);
+      await addGroup(groupData);
+      console.log(groupData);
     });
   }
 
@@ -49,17 +52,17 @@ class GroupController extends TelegramBaseController {
    * @param {Scope} $ Scope of message
    * @param {String} name Name of the group
    */
-  async getGroupHandler($, name) {
+  async getGroupHandler($, userObj) {
     const telegramId = $.message.chat.id;
     let userNameAlreadyExist = null;
 
-    //Check if a particular group exists
-    if (name) {
+    if (userObj) {
       const groups = await db.find({
         collection: GROUPS,
         name,
-        owner: { telegramId }
+        owner: { natelegramId }
       });
+      console.log(groups);
       if (groups.length > 0) return (userNameAlreadyExist = true);
       else return (userNameAlreadyExist = false);
     }
@@ -119,36 +122,34 @@ class GroupController extends TelegramBaseController {
 
   makeNewGroupFrom($) {
     return {
-      name: {
-        q: "Alright, new group. What would be the name of your group?",
+      groupName: {
+        q: "Alright, What would be the name of your group?",
         error:
-          "Sorry try again, name has already been used and must begin with a word.",
+          "Sorry try again, name has already been used or didn't begin with a word.",
         validator: async (message, callback) => {
           const userReply = message.text;
-
-          if (!/^[A-z a-z]/g.test(userReply)) callback(false);
+          const testIfText = /^[A-z a-z]/g.test(userReply);
 
           const ifGroupExist = await this.getGroupHandler($, userReply);
 
-          if (!ifGroupExist) {
-            callback(true, message.text);
+          if (testIfText === true && !ifGroupExist) {
+            callback(true, userReply);
             return;
           }
           callback(false);
         }
       },
-      age: {
+      students: {
         q:
-          "Great. Now send me the names of your students seperated with a comma, like Bill Gates, Steve Jobs, Barak Obama, Joshua Selman",
-        error:
-          "Sorry, make sure it is seperated with a comma, be words only and be more than one student",
+          "Great. Now send me the names of your students seperated with a comma, like Bill Gates, Steve Jobs",
+        error: "Sorry, make sure it is seperated with a comma, be words only.",
         validator: (message, callback) => {
           const userReply = message.text;
-          if (!/^[A-z a-z]/g.test(userReply)) callback(false);
+          const testIfText = /^[A-z a-z]/g.test(userReply);
 
-          const students = userReply.split(",");
+          const students = userReply ? userReply.split(",") : false;
 
-          if (students && students.length) {
+          if (testIfText && students && students.length) {
             callback(true, students);
             return;
           }
