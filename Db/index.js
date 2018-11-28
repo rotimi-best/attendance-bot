@@ -1,7 +1,7 @@
 const Datastore = require("nedb-promises");
 
 const db = Datastore.create({
-  filename: "db.db",
+  filename: "Data/db.db",
   timestampData: true,
   autoload: true
 });
