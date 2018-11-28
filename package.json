@@ -28,8 +28,5 @@
     "googleapis": "^35.0.0",
     "nedb-promises": "^3.0.2",
     "telegram-node-bot": "^4.0.5"
-  },
-  "devDependencies": {
-    "nodemon": "^1.18.6"
   }
 }
