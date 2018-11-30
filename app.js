@@ -45,3 +45,4 @@ bot.router
   .when(new TextCommand("/help", "helpCommand"), new HelpController())
   .when(new TextCommand("/test", "testCommand"), new StartController())
   .otherwise(new OtherwiseController())
+
