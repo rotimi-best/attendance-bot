@@ -1,11 +1,13 @@
 const Telegram = require("telegram-node-bot");
+const mongoose = require('mongoose');
 const TextCommand = Telegram.TextCommand;
-require("dotenv").config();
 
 const StartController = require("./Controllers/startController");
 const GroupController = require("./Controllers/groupController");
 const AttendanceController = require("./Controllers/attendanceController");
 const HelpController = require("./Controllers/helpController");
+const OtherwiseController = require("./Controllers/otherwiseController");
+const { MONGO_URI } = require('./helpers/config');
 
 const bot = new Telegram.Telegram(process.env.API_KEY, {
   workers: 1,
@@ -13,6 +15,18 @@ const bot = new Telegram.Telegram(process.env.API_KEY, {
     port: 8081,
     host: "127.0.0.1"
   }
+});
+
+mongoose.connect(MONGO_URI, { useNewUrlParser: true });
+
+mongoose.Promise = global.Promise;
+
+const db = mongoose.connection;
+
+db.on('error', err => console.log(err));
+
+db.once('open', () => {
+  console.log('DB has been opened');
 });
 
 bot.router
@@ -30,3 +44,4 @@ bot.router
   .when(new TextCommand("/editattendance", "updateAttendanceCommand"), new AttendanceController())
   .when(new TextCommand("/help", "helpCommand"), new HelpController())
   .when(new TextCommand("/test", "testCommand"), new StartController())
+  .otherwise(new OtherwiseController())
