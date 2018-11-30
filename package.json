@@ -4,7 +4,7 @@
   "description": "A telegram bot that takes and stores attendance",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
     "mongoose": "^5.3.14",
     "nedb-promises": "^3.0.2",
     "nodemon": "^1.18.7",
-    "telegram-node-bot": "^4.0.5"
+    "telegram-node-bot": "^4.0.5",
+    "mongoose-timestamp": "^0.6.0"
   }
 }

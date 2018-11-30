@@ -1,4 +1,4 @@
-
+const CONSTANTS = require('../helpers/constants');
 
 /**
  * @param {Object} params This should be an Object with fields you need in order to manipulate the date.
