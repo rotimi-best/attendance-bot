@@ -10,6 +10,7 @@ class OtherwiseController extends TelegramBaseController {
     log(id);
     log(msg);
     $.sendMessage("I am a robot and didn't quite understand what you said");
+    helperController($);
   }
 }
 
