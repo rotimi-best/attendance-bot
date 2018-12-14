@@ -15,6 +15,6 @@ const AttendanceSchema = new Schema({
 
 AttendanceSchema.plugin(timestamp);
 
-const Attendance = mongoose.model("User", AttendanceSchema);
+const Attendance = mongoose.model("Attendace", AttendanceSchema);
 
 module.exports = Attendance;
