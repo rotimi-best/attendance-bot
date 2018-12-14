@@ -1,19 +1,21 @@
 const Telegram = require("telegram-node-bot");
 const TelegramBaseController = Telegram.TelegramBaseController;
-const db = require("../Db");
+const { addUser, findUser } = require("../Db/User");
 
 class GroupController extends TelegramBaseController {
   /**
    * User fields
    * @param {Object} $
    */
-  addUser(userDetails) {
-    userDetails.collection = "users";
-    db.insert(userDetails, (err, newDoc) => {
-      if (err) return "Error occured" + err;
-      console.log("New user created!");
-      return newDoc;
-    });
+  async addUser(userData) {
+    try {
+      await addUser(userData);
+    } catch (error) {
+      console.error(
+        "Error adding user in addUser func in GroupController",
+        error
+      );
+    }
   }
   /**
    * Finding parameters
@@ -21,7 +23,7 @@ class GroupController extends TelegramBaseController {
    */
   async getUser(params) {
     const { telegramId } = params;
-    const user = await db.find({ telegramId: telegramId });
+    const user = await findUser({ telegramId });
     return user;
   }
 }

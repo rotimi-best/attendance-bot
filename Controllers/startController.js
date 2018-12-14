@@ -13,6 +13,7 @@ class StartController extends TelegramBaseController {
     // console.log($)
     // this.telegramIdOfUser = '';
   }
+
   /**
    * Scope of the message
    * @param {Scope} $
@@ -23,7 +24,7 @@ class StartController extends TelegramBaseController {
       ? $.message.chat.firstName
       : $.message.chat.lastName;
 
-    const user = await userController.getUser({ telegramId: telegramId });
+    const user = await userController.getUser({ telegramId });
     if (user.length) {
       this.nameOfUser = user[0].name;
       $.sendMessage(
@@ -79,6 +80,7 @@ class StartController extends TelegramBaseController {
       }
     });
   }
+
   testHandler() {
     console.log(this.nameOfUser);
   }
