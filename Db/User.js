@@ -41,6 +41,5 @@ const updateUser = (findField, setField) => {
 module.exports = {
   addUser,
   findUser,
-  updateUser,
-  deleteUser
+  updateUser
 };

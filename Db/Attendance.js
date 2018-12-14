@@ -41,6 +41,5 @@ const updateAttendance = (findField, setField) => {
 module.exports = {
   addAttendance,
   findAttendance,
-  updateAttendance,
-  deleteAttendance
+  updateAttendance
 };
