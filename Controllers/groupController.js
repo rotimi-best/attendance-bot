@@ -128,12 +128,12 @@ class GroupController extends TelegramBaseController {
           "Sorry try again, name has already been used or didn't begin with a word.",
         validator: async (message, callback) => {
           const groupName = message.text;
-          const testIfText = /^[A-z a-z]/g.test(userReply);
+          const testIfText = /^[A-z a-z]/g.test(groupName);
 
           const ifGroupExist = await this.getGroupHandler($, { groupName });
 
           if (testIfText === true && !ifGroupExist) {
-            callback(true, userReply);
+            callback(true, groupName);
             return;
           }
           callback(false);
