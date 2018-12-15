@@ -1,9 +1,7 @@
 const Telegram = require("telegram-node-bot");
 const TelegramBaseController = Telegram.TelegramBaseController;
 const UserController = require("./userController");
-const userController = new UserController();
-const { addGroup } = require("../Db/Groups");
-const db = require("../Db");
+const { addGroup, findGroup } = require("../Db/Groups");
 const {
   DB_COLLECTIONS: { USERS, GROUPS, ATTENDANCES }
 } = require("../helpers/constants");
@@ -14,7 +12,7 @@ const {
 class GroupController extends TelegramBaseController {
   constructor() {
     super();
-    this.userObj = { name: "", telegramId: 0 };
+    this.userObj = { userName: "", telegramId: 0 };
   }
 
   /**
@@ -24,24 +22,23 @@ class GroupController extends TelegramBaseController {
   async addGroupHandler($) {
     //Get name
     const telegramId = $.message.chat.id;
-    const { name } = await this.getUserName(telegramId);
-    const ifgroup = await this.getGroupHandler($, {
-      useName: groups,
-      telegramId
-    });
-    console.log(ifgroup);
-    //Form to create  a new group
+    const { userName } = await this.getUserName(telegramId);
     const form = this.makeNewGroupFrom($);
     $.runForm(form, async ({ groupName, students }) => {
       const groupData = {
         name: groupName,
-        students: students,
+        students,
         owner: {
-          name,
-          telegramId
-        }
+          telegramId,
+          name: userName
+        },
+        spreadsheetLink: "",
+        sheetName: ""
       };
-      $.sendMessage(`Great ${name}, Your group has successfully been created.`);
+
+      $.sendMessage(
+        `Great ${userName}, Your group has successfully been created.`
+      );
       await addGroup(groupData);
       console.log(groupData);
     });
@@ -52,24 +49,27 @@ class GroupController extends TelegramBaseController {
    * @param {Scope} $ Scope of message
    * @param {String} name Name of the group
    */
-  async getGroupHandler($, userObj) {
+  async getGroupHandler($, groupObj) {
     const telegramId = $.message.chat.id;
-    let userNameAlreadyExist = null;
+    const { userName } = await this.getUserName(telegramId);
+    let groupAlreadyExist = null;
 
-    if (userObj) {
-      const groups = await db.find({
-        collection: GROUPS,
-        name,
-        owner: { natelegramId }
+    if (groupObj) {
+      const { groupName } = groupObj;
+      const groups = await findGroup({
+        name: groupName,
+        owner: { telegramId, name: userName }
       });
+
       console.log(groups);
-      if (groups.length > 0) return (userNameAlreadyExist = true);
-      else return (userNameAlreadyExist = false);
+      if (groups.length > 0) return (groupAlreadyExist = true);
+      else return (groupAlreadyExist = false);
     }
 
     //Find all groups created by this particular user
-    const groups = await db.find({ collection: GROUPS, owner: { telegramId } });
-    const userName = await this.getUserName(telegramId);
+    const groups = await findGroup({
+      owner: { telegramId, name: userName }
+    });
 
     if (groups.length > 0) {
       const buttons = [];
@@ -116,7 +116,7 @@ class GroupController extends TelegramBaseController {
     const userController = new UserController();
     const user = await userController.getUser({ telegramId });
 
-    this.userObj = { name: user[0].name, telegramId: user[0].telegramId };
+    this.userObj = { userName: user[0].name, telegramId: user[0].telegramId };
     return this.userObj;
   }
 
@@ -127,10 +127,10 @@ class GroupController extends TelegramBaseController {
         error:
           "Sorry try again, name has already been used or didn't begin with a word.",
         validator: async (message, callback) => {
-          const userReply = message.text;
+          const groupName = message.text;
           const testIfText = /^[A-z a-z]/g.test(userReply);
 
-          const ifGroupExist = await this.getGroupHandler($, userReply);
+          const ifGroupExist = await this.getGroupHandler($, { groupName });
 
           if (testIfText === true && !ifGroupExist) {
             callback(true, userReply);
