@@ -1,12 +1,14 @@
 const Telegram = require("telegram-node-bot");
 const TelegramBaseController = Telegram.TelegramBaseController;
 const UserController = require("./userController");
+const AttendanceController = require("./attendanceController");
+const attendanceController = new AttendanceController();
 const { addGroup, findGroup } = require("../Db/Groups");
 const {
   DB_COLLECTIONS: { USERS, GROUPS, ATTENDANCES }
 } = require("../helpers/constants");
 const {
-  emojis: { thumbsUp, thumbsDown },
+  emojis: { thumbsUp, thumbsDown, write },
   len
 } = require("../modules");
 const { log } = console;
@@ -28,15 +30,19 @@ class GroupController extends TelegramBaseController {
     const form = this.makeNewGroupFrom($);
 
     $.runForm(form, async ({ groupName, students }) => {
+      const trimmedStudents = Array.isArray(students)
+        ? students.map(stud => stud.trim())
+        : students;
+
       const groupData = {
         name: groupName,
-        students,
+        students: trimmedStudents,
         owner: {
           telegramId,
           name: userName
         },
         spreadsheetLink: "",
-        sheetName: ""
+        sheetName: groupName
       };
 
       $.sendMessage(
@@ -95,10 +101,22 @@ class GroupController extends TelegramBaseController {
           if (group) {
             const groupDetail = this.groupDetails(group);
 
-            $.sendMessage(groupDetail, {
-              reply_markup: JSON.stringify({ remove_keyboard: true }),
-              parse_mode: "HTML"
+            $.runMenu({
+              message: groupDetail,
+              options: {
+                parse_mode: "HTML" // in options field you can pass some additional data, like parse_mode
+              },
+              layout: 2,
+              ["Take Attendance " + write]: () => {
+                attendanceController.takeAttendanceHandler($, group);
+              }
             });
+
+            // $.sendMessage(groupDetail, {
+            //   reply_markup: JSON.stringify({
+            //     remove_keyboard: true }),
+            //   parse_mode: "HTML"
+            // });
           }
         } else {
           $.sendMessage(`Not a valid group`, {
@@ -170,7 +188,7 @@ class GroupController extends TelegramBaseController {
           const userReply = message.text;
           const testIfText = /^[A-z a-z]/g.test(userReply);
 
-          const students = userReply ? userReply.split(",").trim() : false;
+          const students = userReply ? userReply.split(",") : false;
 
           if (testIfText && students && len(students)) {
             callback(true, students);
@@ -186,6 +204,8 @@ class GroupController extends TelegramBaseController {
   groupDetails(group) {
     const [{ name, students, spreadsheetLink }] = group;
     let studentList = "";
+
+    if (!len(students)) studentList = "None";
 
     for (const student of students) {
       studentList += `\n - ${student}`;

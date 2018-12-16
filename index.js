@@ -46,10 +46,10 @@ bot.router
     new TextCommand("/deletegroup", "deleteGroupCommand"),
     new GroupController()
   )
-  .when(
-    new TextCommand("/newattendance", "addAttendanceCommand"),
-    new AttendanceController()
-  )
+  // .when(
+  //   new TextCommand("/newattendance", "takeAttendanceCommand"),
+  //   new AttendanceController()
+  // )
   .when(
     new TextCommand("/viewattendance", "getAttendanceCommand"),
     new AttendanceController()

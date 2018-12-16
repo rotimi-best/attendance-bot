@@ -130,6 +130,7 @@ const emojis = {
   coolGlasses: "😎",
   oneEye: "😉",
   typing: "📝",
+  write: "✍🏼",
   help: "🔑",
   byAlphabet: "🔤",
   search: "🔎",
