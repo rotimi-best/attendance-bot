@@ -80,50 +80,19 @@ class GroupController extends TelegramBaseController {
     });
 
     if (len(groups)) {
-      const buttons = [];
+      const groupsMenu = {
+        message: `Here you go ${userName}:`,
+        resizeKeyboard: true,
+        layout: 2
+      };
 
-      groups.forEach(({ name }) => buttons.push([{ text: name }]));
-
-      $.sendMessage(`Here you go ${userName}:`, {
-        reply_markup: JSON.stringify({
-          keyboard: buttons,
-          one_time_keyboard: true
-        })
+      groups.forEach(({ name }) => {
+        groupsMenu[name] = async () => {
+          await this.groupDetailsMenu($, name);
+        };
       });
 
-      $.waitForRequest.then(async $ => {
-        const groupName = $.message.text;
-        const ifGroupFormat = /^Group/g.test(groupName);
-
-        if (ifGroupFormat) {
-          const group = await this.getGroupHandler($, { groupName });
-
-          if (group) {
-            const groupDetail = this.groupDetails(group);
-
-            $.runMenu({
-              message: groupDetail,
-              options: {
-                parse_mode: "HTML" // in options field you can pass some additional data, like parse_mode
-              },
-              layout: 2,
-              ["Take Attendance " + write]: () => {
-                attendanceController.takeAttendanceHandler($, group);
-              }
-            });
-
-            // $.sendMessage(groupDetail, {
-            //   reply_markup: JSON.stringify({
-            //     remove_keyboard: true }),
-            //   parse_mode: "HTML"
-            // });
-          }
-        } else {
-          $.sendMessage(`Not a valid group`, {
-            reply_markup: JSON.stringify({ remove_keyboard: true })
-          });
-        }
-      });
+      $.runMenu(groupsMenu);
     } else {
       $.sendMessage(
         `Sorry ${userName}, you havn't created any group yet, use the /newgroup command to create one.`
@@ -199,6 +168,22 @@ class GroupController extends TelegramBaseController {
         }
       }
     };
+  }
+
+  async groupDetailsMenu($, groupName) {
+    const group = await this.getGroupHandler($, { groupName });
+    const groupDetail = this.groupDetails(group);
+
+    $.runMenu({
+      message: groupDetail,
+      options: {
+        parse_mode: "HTML"
+      },
+      layout: 1,
+      ["Take Attendance " + write]: () => {
+        attendanceController.takeAttendanceHandler($, group);
+      }
+    });
   }
 
   groupDetails(group) {
