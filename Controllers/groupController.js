@@ -6,8 +6,10 @@ const {
   DB_COLLECTIONS: { USERS, GROUPS, ATTENDANCES }
 } = require("../helpers/constants");
 const {
-  emojis: { thumbsUp, thumbsDown }
+  emojis: { thumbsUp, thumbsDown },
+  len
 } = require("../modules");
+const { log } = console;
 
 class GroupController extends TelegramBaseController {
   constructor() {
@@ -24,6 +26,7 @@ class GroupController extends TelegramBaseController {
     const telegramId = $.message.chat.id;
     const { userName } = await this.getUserName(telegramId);
     const form = this.makeNewGroupFrom($);
+
     $.runForm(form, async ({ groupName, students }) => {
       const groupData = {
         name: groupName,
@@ -61,8 +64,7 @@ class GroupController extends TelegramBaseController {
         owner: { telegramId, name: userName }
       });
 
-      console.log(groups);
-      if (groups.length > 0) return (groupAlreadyExist = true);
+      if (len(groups)) return groups;
       else return (groupAlreadyExist = false);
     }
 
@@ -71,19 +73,38 @@ class GroupController extends TelegramBaseController {
       owner: { telegramId, name: userName }
     });
 
-    if (groups.length > 0) {
+    if (len(groups)) {
       const buttons = [];
 
-      groups.forEach(({ name }) => {
-        const button = [{ text: name }];
-        buttons.push(button);
-      });
+      groups.forEach(({ name }) => buttons.push([{ text: name }]));
 
       $.sendMessage(`Here you go ${userName}:`, {
         reply_markup: JSON.stringify({
           keyboard: buttons,
           one_time_keyboard: true
         })
+      });
+
+      $.waitForRequest.then(async $ => {
+        const groupName = $.message.text;
+        const ifGroupFormat = /^Group/g.test(groupName);
+
+        if (ifGroupFormat) {
+          const group = await this.getGroupHandler($, { groupName });
+
+          if (group) {
+            const groupDetail = this.groupDetails(group);
+
+            $.sendMessage(groupDetail, {
+              reply_markup: JSON.stringify({ remove_keyboard: true }),
+              parse_mode: "HTML"
+            });
+          }
+        } else {
+          $.sendMessage(`Not a valid group`, {
+            reply_markup: JSON.stringify({ remove_keyboard: true })
+          });
+        }
       });
     } else {
       $.sendMessage(
@@ -123,16 +144,18 @@ class GroupController extends TelegramBaseController {
   makeNewGroupFrom($) {
     return {
       groupName: {
-        q: "Alright, What would be the name of your group?",
-        error:
-          "Sorry try again, name has already been used or didn't begin with a word.",
+        q:
+          "Alright, What would be the name of your group?\n\nPlease it must begin with Group like: Group 1 or Group_1",
+        error: "Sorry try again, group exists or doesn't begin with Group",
         validator: async (message, callback) => {
           const groupName = message.text;
-          const testIfText = /^[A-z a-z]/g.test(groupName);
+          const testIfText = /^Group/g.test(groupName);
+          log("Test", testIfText);
 
-          const ifGroupExist = await this.getGroupHandler($, { groupName });
+          const group = await this.getGroupHandler($, { groupName });
+          log("group", group);
 
-          if (testIfText === true && !ifGroupExist) {
+          if (testIfText && !group) {
             callback(true, groupName);
             return;
           }
@@ -147,9 +170,9 @@ class GroupController extends TelegramBaseController {
           const userReply = message.text;
           const testIfText = /^[A-z a-z]/g.test(userReply);
 
-          const students = userReply ? userReply.split(",") : false;
+          const students = userReply ? userReply.split(",").trim() : false;
 
-          if (testIfText && students && students.length) {
+          if (testIfText && students && len(students)) {
             callback(true, students);
             return;
           }
@@ -158,6 +181,21 @@ class GroupController extends TelegramBaseController {
         }
       }
     };
+  }
+
+  groupDetails(group) {
+    const [{ name, students, spreadsheetLink }] = group;
+    let studentList = "";
+
+    for (const student of students) {
+      studentList += `\n - ${student}`;
+    }
+
+    const groupDetail = `<b>Name</b>: ${name}\n<b>No of Students</b>: ${len(
+      students
+    )}\n<b>Students</b>: ${studentList}\n<b>Attendance</b>: ${spreadsheetLink}`;
+
+    return groupDetail;
   }
 
   get routes() {

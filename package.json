@@ -4,7 +4,7 @@
   "description": "A telegram bot that takes and stores attendance",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "nodemon index.js"
   },
   "repository": {
     "type": "git",
