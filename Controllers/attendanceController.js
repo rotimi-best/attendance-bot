@@ -1,3 +1,4 @@
+const { log } = console;
 const Telegram = require("telegram-node-bot");
 const TelegramBaseController = Telegram.TelegramBaseController;
 const {
@@ -23,6 +24,34 @@ class AttendanceController extends TelegramBaseController {
         })
       }
     );
+    const attendance = {
+      groupName: name,
+      ownerTelegramId: owner.telegramId
+    };
+    const attendanceRes = [];
+
+    if (len(students)) {
+      for (const student of students) {
+        $.runMenu({
+          message: student,
+          layout: 2,
+          [thumbsUp]: () => {},
+          [thumbsDown]: () => {}
+        });
+
+        const {
+          message: { text }
+        } = await $.waitForRequest;
+
+        const studentName = student;
+        const present = text === thumbsUp ? true : false;
+        attendanceRes.push({ studentName, present });
+      }
+      attendance.result = attendanceRes;
+      log(attendance);
+    } else {
+      log("No students in this group");
+    }
   }
 
   /**
