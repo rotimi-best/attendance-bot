@@ -1,10 +1,14 @@
 const { log } = console;
 const Telegram = require("telegram-node-bot");
 const TelegramBaseController = Telegram.TelegramBaseController;
+const { addAttendance } = require("../Db/Attendance");
 const {
   emojis: { thumbsUp, thumbsDown },
   len
 } = require("../modules");
+const {
+  CALLBACK_DATA: { VIEW_ATTENDANCE }
+} = require("../helpers/constants");
 
 class AttendanceController extends TelegramBaseController {
   /**
@@ -45,10 +49,21 @@ class AttendanceController extends TelegramBaseController {
 
         const studentName = student;
         const present = text === thumbsUp ? true : false;
+
         attendanceRes.push({ studentName, present });
       }
+
       attendance.result = attendanceRes;
-      log(attendance);
+
+      await addAttendance(attendance);
+      $.sendMessage(`Great ${owner.name}, Done!`, {
+        reply_markup: JSON.stringify({
+          remove_keyboard: true,
+          inline_keyboard: [
+            [{ text: "View Result", callback_data: VIEW_ATTENDANCE }]
+          ]
+        })
+      });
     } else {
       log("No students in this group");
     }
