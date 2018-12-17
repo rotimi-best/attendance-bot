@@ -1,5 +1,10 @@
 const CONSTANTS = require("../helpers/constants");
+const authenticatedSheet = require("./auth_sheets");
 
+/**
+ * Get the length of any value
+ * @param {Any} x Value you want to calculate its length
+ */
 const len = x => x.length;
 
 /**
@@ -151,5 +156,6 @@ module.exports = {
   emojis,
   reduceDay,
   increaseDay,
-  len
+  len,
+  authenticatedSheet
 };
