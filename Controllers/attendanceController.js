@@ -1,7 +1,7 @@
 const { log } = console;
 const Telegram = require("telegram-node-bot");
 const TelegramBaseController = Telegram.TelegramBaseController;
-const { addAttendance } = require("../Db/Attendance");
+const { addAttendance, findAttendance } = require("../Db/Attendance");
 const {
   emojis: { thumbsUp, thumbsDown },
   len
@@ -71,6 +71,11 @@ class AttendanceController extends TelegramBaseController {
    * @param {Scope} $
    */
   async getAttendanceHandler($) {
+    const ownerTelegramId = $.message.chat.id;
+
+    const attendances = await findAttendance({ ownerTelegramId });
+    console.log(attendances);
+
     $.sendMessage(`${$.message.text} Okay`, {
       reply_markup: JSON.stringify({
         remove_keyboard: true
