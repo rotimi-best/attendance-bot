@@ -49,6 +49,10 @@ bot.router
     new AttendanceController()
   )
   .when(
+    new TextCommand("View Result", "getAttendanceCommand"),
+    new AttendanceController()
+  )
+  .when(
     new TextCommand("/editattendance", "updateAttendanceCommand"),
     new AttendanceController()
   )
