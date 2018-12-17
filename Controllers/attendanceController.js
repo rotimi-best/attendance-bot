@@ -58,7 +58,9 @@ class AttendanceController extends TelegramBaseController {
       await addAttendance(attendance);
       $.sendMessage(`Great ${owner.name}, Done!`, {
         reply_markup: JSON.stringify({
-          keyboard: [[{ text: "View Result", callback_data: VIEW_ATTENDANCE }]]
+          inline_keyboard: [
+            [{ text: "View Result", callback_data: VIEW_ATTENDANCE }]
+          ]
         })
       });
     } else {
