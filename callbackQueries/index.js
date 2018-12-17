@@ -1,14 +1,18 @@
 const { TelegramBaseCallbackQueryController } = require("telegram-node-bot");
+const AttendanceController = require("../Controllers/attendanceController");
+const attendanceController = new AttendanceController();
+const {
+  CALLBACK_DATA: { VIEW_ATTENDANCE }
+} = require("../helpers/constants");
 const bot = require("../helpers/botConnection").get();
-
 
 class CallbackQueryController extends TelegramBaseCallbackQueryController {
   async handle(query) {
     console.log(query.data);
 
     switch (query.data) {
-      case "111":
-        console.log("New todo");
+      case VIEW_ATTENDANCE:
+        attendanceController.getAttendanceHandler(bot.api);
         break;
       default:
         console.log("No option choosen");

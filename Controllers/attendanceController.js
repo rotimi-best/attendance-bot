@@ -12,7 +12,7 @@ const {
 
 class AttendanceController extends TelegramBaseController {
   /**
-   * Update with some params
+   * Take an attendance
    * @param {Scope} $
    */
   async takeAttendanceHandler($, group) {
@@ -58,10 +58,7 @@ class AttendanceController extends TelegramBaseController {
       await addAttendance(attendance);
       $.sendMessage(`Great ${owner.name}, Done!`, {
         reply_markup: JSON.stringify({
-          remove_keyboard: true,
-          inline_keyboard: [
-            [{ text: "View Result", callback_data: VIEW_ATTENDANCE }]
-          ]
+          keyboard: [[{ text: "View Result", callback_data: VIEW_ATTENDANCE }]]
         })
       });
     } else {
@@ -70,15 +67,19 @@ class AttendanceController extends TelegramBaseController {
   }
 
   /**
-   * Delete a group
+   * Get attendance
    * @param {Scope} $
    */
   async getAttendanceHandler($) {
-    $.sendMessage(`${$.message.text} is still under production`);
+    $.sendMessage(`${$.message.text} Okay`, {
+      reply_markup: JSON.stringify({
+        remove_keyboard: true
+      })
+    });
   }
 
   /**
-   * Delete a group
+   * Update an attendance
    * @param {Scope} $
    */
   async updateAttendanceHandler($) {
