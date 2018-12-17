@@ -27,8 +27,6 @@ db.once("open", () => {
   console.log("DB has been opened");
 });
 
-bot.router.callbackQuery(new CallbackQueryController());
-
 bot.router
   .when(new TextCommand("/start", "startCommand"), new StartController())
   .when(new TextCommand("/newgroup", "addGroupCommand"), new GroupController())
@@ -57,4 +55,5 @@ bot.router
   .when(new TextCommand("/help", "helpCommand"), new HelpController())
   .when(new TextCommand("/test", "testCommand"), new StartController())
   // .when(new RegexpCommand(/test/g, "testHandler"), new GroupController())
-  .otherwise(new OtherwiseController());
+  .otherwise(new OtherwiseController())
+  .callbackQuery(new CallbackQueryController());
