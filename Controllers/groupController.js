@@ -3,6 +3,7 @@ const TelegramBaseController = Telegram.TelegramBaseController;
 const UserController = require("./userController");
 const AttendanceController = require("./attendanceController");
 const attendanceController = new AttendanceController();
+const { createNewSheet } = require("./spreadSheetController");
 const { addGroup, findGroup } = require("../Db/Groups");
 const {
   DB_COLLECTIONS: { USERS, GROUPS, ATTENDANCES }
@@ -16,7 +17,7 @@ const { log } = console;
 class GroupController extends TelegramBaseController {
   constructor() {
     super();
-    this.userObj = { userName: "", telegramId: 0 };
+    this.userObj = { userName: "", telegramId: 0, spreadsheet: {} };
   }
 
   /**
@@ -26,7 +27,7 @@ class GroupController extends TelegramBaseController {
   async addGroupHandler($) {
     //Get name
     const telegramId = $.message.chat.id;
-    const { userName } = await this.getUserName(telegramId);
+    const { userName, spreadsheet } = await this.getUser(telegramId);
     const form = this.makeNewGroupFrom($);
 
     $.runForm(form, async ({ groupName, students }) => {
@@ -34,6 +35,7 @@ class GroupController extends TelegramBaseController {
         ? students.map(stud => stud.trim())
         : students;
 
+      const id = createNewSheet(spreadsheet.id, groupName);
       const groupData = {
         name: groupName,
         students: trimmedStudents,
@@ -42,8 +44,8 @@ class GroupController extends TelegramBaseController {
           name: userName
         },
         sheet: {
-          id: "",
-          name: ""
+          id,
+          name: groupName
         }
       };
 
@@ -62,7 +64,7 @@ class GroupController extends TelegramBaseController {
    */
   async getGroupHandler($, groupObj) {
     const telegramId = $.message.chat.id;
-    const { userName } = await this.getUserName(telegramId);
+    const { userName } = await this.getUser(telegramId);
     let groupAlreadyExist = null;
 
     if (groupObj) {
@@ -118,7 +120,7 @@ class GroupController extends TelegramBaseController {
     $.sendMessage(`${$.message.text} is still under production`);
   }
 
-  async getUserName(telegramId) {
+  async getUser(telegramId) {
     if (this.userObj.telegramId === telegramId) {
       return this.userObj;
     }
@@ -126,7 +128,9 @@ class GroupController extends TelegramBaseController {
     const userController = new UserController();
     const user = await userController.getUser({ telegramId });
 
-    this.userObj = { userName: user[0].name, telegramId: user[0].telegramId };
+    const [{ name, telegramId, spreadsheet }] = user;
+
+    this.userObj = { userName: name, telegramId, spreadsheet };
     return this.userObj;
   }
 

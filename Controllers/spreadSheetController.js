@@ -61,7 +61,8 @@ const createNewSheet = (spreadsheetId, title) => {
 const newSheetWithStudents = () => {};
 
 module.exports = {
+  updateSheet,
+  createNewSheet,
   createNewSpreadSheet,
-  newSheetWithStudents,
-  updateSheet
+  newSheetWithStudents
 };
