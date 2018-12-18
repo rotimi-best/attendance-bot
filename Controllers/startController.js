@@ -93,15 +93,15 @@ class StartController extends TelegramBaseController {
    */
   async saveNewUser(name, telegramId) {
     console.log("A new user was added");
-    const id = await createNewSpreadSheet(name);
-    const url = makeSpreadSheetUrl(id);
+    const spreadSheetId = await createNewSpreadSheet(name);
+    const spreadSheetUrl = makeSpreadSheetUrl(id);
 
     await userController.addUser({
       name,
       telegramId,
       spreadsheet: {
-        id,
-        url
+        id: spreadSheetId,
+        url: spreadSheetUrl
       }
     });
     this.nameOfUser = name;

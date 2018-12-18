@@ -35,7 +35,7 @@ class GroupController extends TelegramBaseController {
         ? students.map(stud => stud.trim())
         : students;
 
-      const id = createNewSheet(spreadsheet.id, groupName);
+      const sheetId = createNewSheet(spreadsheet.id, groupName);
       const groupData = {
         name: groupName,
         students: trimmedStudents,
@@ -44,7 +44,7 @@ class GroupController extends TelegramBaseController {
           name: userName
         },
         sheet: {
-          id,
+          id: sheetId,
           name: groupName
         }
       };
