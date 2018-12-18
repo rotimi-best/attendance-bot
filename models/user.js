@@ -5,7 +5,10 @@ const timestamp = require("mongoose-timestamp");
 const UserSchema = new Schema({
   name: String,
   telegramId: Number,
-  spreadsheetLink: String
+  spreadsheet: {
+    id: String,
+    url: String
+  }
 });
 
 UserSchema.plugin(timestamp);
