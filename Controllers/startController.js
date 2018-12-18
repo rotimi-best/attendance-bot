@@ -94,7 +94,11 @@ class StartController extends TelegramBaseController {
 
     await userController.addUser({
       name: userName,
-      telegramId: telegramId
+      telegramId,
+      spreadsheet: {
+        id: "",
+        url: ""
+      }
     });
     this.nameOfUser = userName;
   }

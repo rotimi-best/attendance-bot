@@ -41,8 +41,10 @@ class GroupController extends TelegramBaseController {
           telegramId,
           name: userName
         },
-        spreadsheetLink: "",
-        sheetName: groupName
+        sheet: {
+          id: "",
+          name: ""
+        }
       };
 
       $.sendMessage(
@@ -187,7 +189,7 @@ class GroupController extends TelegramBaseController {
   }
 
   groupDetails(group) {
-    const [{ name, students, spreadsheetLink }] = group;
+    const [{ name, students }] = group;
     let studentList = "";
 
     if (!len(students)) studentList = "None";
@@ -198,7 +200,7 @@ class GroupController extends TelegramBaseController {
 
     const groupDetail = `<b>Name</b>: ${name}\n<b>No of Students</b>: ${len(
       students
-    )}\n<b>Students</b>: ${studentList}\n<b>Attendance</b>: ${spreadsheetLink}`;
+    )}\n<b>Students</b>: ${studentList}`;
 
     return groupDetail;
   }

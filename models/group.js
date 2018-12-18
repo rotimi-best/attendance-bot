@@ -12,8 +12,7 @@ const GroupSchema = new Schema({
   sheet: {
     id: String,
     name: String
-  },
-  sheetName: String
+  }
 });
 
 GroupSchema.plugin(timestamp);
