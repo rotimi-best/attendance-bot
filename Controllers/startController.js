@@ -54,13 +54,13 @@ class StartController extends TelegramBaseController {
 
     $.waitForRequest.then(async $ => {
       if ($.message.text === `Yes ${thumbsUp}`) {
-        await replyNewUser($, userName, telegramId);
+        await this.replyNewUser($, userName, telegramId);
       } else if ($.message.text === `No ${thumbsDown}`) {
         $.sendMessage(`What should I then call you?`);
 
         $.waitForRequest.then(async $ => {
           userName = $.message.text;
-          await replyNewUser($, userName, telegramId);
+          await this.replyNewUser($, userName, telegramId);
         });
       }
     });
