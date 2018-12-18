@@ -1,27 +1,29 @@
 const { getAuthenticatedSheet } = require("../modules");
 
-const createNewSpreadSheet = async title => {
-  const resource = {
-    properties: {
-      title
-    }
-  };
-
-  const sheets = await getAuthenticatedSheet();
-
-  sheets.spreadsheets.create(
-    {
-      resource,
-      fields: "spreadsheetId"
-    },
-    (err, spreadsheet) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(spreadsheet);
+const createNewSpreadSheet = title => {
+  return new Promise(async (res, rej) => {
+    const resource = {
+      properties: {
+        title
       }
-    }
-  );
+    };
+
+    const sheets = await getAuthenticatedSheet();
+
+    sheets.spreadsheets.create(
+      {
+        resource,
+        fields: "spreadsheetId"
+      },
+      (err, spreadsheet) => {
+        if (err) {
+          rej(err);
+        } else {
+          res(spreadsheet);
+        }
+      }
+    );
+  });
 };
 
 const addSheetWithStudents = () => {};
