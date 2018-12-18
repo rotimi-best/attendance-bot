@@ -68,16 +68,17 @@ class StartController extends TelegramBaseController {
 
         $.waitForRequest.then(async $ => {
           userName = $.message.text;
+          const spreadSheetUrl = await this.saveNewUser(userName, telegramId);
+
           $.sendMessage(
-            `Okay, Thanks ${userName} ${ok}.\n\nTo begin taking attendance you need to create a group. Use the /newgroup command for that.`,
+            `Okay, Thanks ${userName} ${ok}, I created a new spreadsheet for you where I will store all your attendances, [open it](${spreadSheetUrl}).\n\nTo begin taking attendance you need to create a group. Use the /newgroup command for that.`,
             {
+              parse_mode: "Markdown",
               reply_markup: JSON.stringify({
                 remove_keyboard: true
               })
             }
           );
-
-          await this.saveNewUser(userName, telegramId);
         });
       }
     });
@@ -91,20 +92,29 @@ class StartController extends TelegramBaseController {
    * @param {String} name Name of the user
    * @param {Number} telegramId Telegram ID of user
    */
-  async saveNewUser(name, telegramId) {
-    console.log("A new user was added");
-    const spreadSheetId = await createNewSpreadSheet(name);
-    const spreadSheetUrl = makeSpreadSheetUrl(id);
+  saveNewUser(name, telegramId) {
+    return new Promise(async (res, rej) => {
+      try {
+        console.log("A new user was added");
+        const spreadSheetId = await createNewSpreadSheet(name);
+        const spreadSheetUrl = makeSpreadSheetUrl(spreadSheetId);
 
-    await userController.addUser({
-      name,
-      telegramId,
-      spreadsheet: {
-        id: spreadSheetId,
-        url: spreadSheetUrl
+        await userController.addUser({
+          name,
+          telegramId,
+          spreadsheet: {
+            id: spreadSheetId,
+            url: spreadSheetUrl
+          }
+        });
+        this.nameOfUser = name;
+
+        res(spreadSheetUrl);
+      } catch (error) {
+        console.error(error);
+        rej(error);
       }
     });
-    this.nameOfUser = name;
   }
 
   get routes() {
