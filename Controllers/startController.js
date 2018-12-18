@@ -22,6 +22,8 @@ class StartController extends TelegramBaseController {
    */
   async startHandler($) {
     const telegramId = $.message.chat.id;
+    const YES = `Yes ${thumbsUp}`;
+    const NO = `No ${thumbsDown}`;
     let userName = $.message.chat.firstName
       ? $.message.chat.firstName
       : $.message.chat.lastName;
@@ -44,18 +46,15 @@ class StartController extends TelegramBaseController {
 
     $.sendMessage(`Hi there! ${wave} Can I call you ${userName}?`, {
       reply_markup: JSON.stringify({
-        keyboard: [
-          [{ text: `Yes ${thumbsUp}` }],
-          [{ text: `No ${thumbsDown}` }]
-        ],
+        keyboard: [[{ text: YES }], [{ text: NO }]],
         one_time_keyboard: true
       })
     });
 
     $.waitForRequest.then(async $ => {
-      if ($.message.text === `Yes ${thumbsUp}`) {
+      if ($.message.text === YES) {
         await this.replyNewUser($, userName, telegramId);
-      } else if ($.message.text === `No ${thumbsDown}`) {
+      } else if ($.message.text === NO) {
         $.sendMessage(`What should I then call you?`);
 
         $.waitForRequest.then(async $ => {
