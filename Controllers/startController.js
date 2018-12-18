@@ -68,17 +68,31 @@ class StartController extends TelegramBaseController {
 
         $.waitForRequest.then(async $ => {
           userName = $.message.text;
-          const spreadSheetUrl = await this.saveNewUser(userName, telegramId);
+          try {
+            const spreadSheetUrl = await this.saveNewUser(userName, telegramId);
 
-          $.sendMessage(
-            `Okay, Thanks ${userName} ${ok}, I created a new spreadsheet for you where I will store all your attendances, [open it](${spreadSheetUrl}).\n\nTo begin taking attendance you need to create a group. Use the /newgroup command for that.`,
-            {
-              parse_mode: "Markdown",
-              reply_markup: JSON.stringify({
-                remove_keyboard: true
-              })
-            }
-          );
+            $.sendMessage(
+              `Okay, Thanks ${userName} ${ok}, I created a new spreadsheet for you where I will store all your attendances, [open it](${spreadSheetUrl}).\n\nTo begin taking attendance you need to create a group. Use the /newgroup command for that.`,
+              {
+                parse_mode: "Markdown",
+                reply_markup: JSON.stringify({
+                  remove_keyboard: true
+                })
+              }
+            );
+          } catch (error) {
+            $.sendMessage(
+              `Sorry ${userName} something went I couldn't create a spreadsheet for you. My creator will fix it`,
+              {
+                parse_mode: "Markdown",
+                reply_markup: JSON.stringify({
+                  remove_keyboard: true
+                })
+              }
+            );
+
+            console.log(error);
+          }
         });
       }
     });
