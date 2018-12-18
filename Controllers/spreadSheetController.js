@@ -1,4 +1,4 @@
-const { authenticatedSheet } = require("../modules");
+const { getAuthenticatedSheet } = require("../modules");
 
 const createNewSpreadSheet = async title => {
   const resource = {
@@ -7,7 +7,7 @@ const createNewSpreadSheet = async title => {
     }
   };
 
-  const sheets = await authenticatedSheet();
+  const sheets = await getAuthenticatedSheet();
 
   sheets.spreadsheets.create(
     {

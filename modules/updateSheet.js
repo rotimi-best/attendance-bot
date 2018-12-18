@@ -169,7 +169,7 @@ const updateStatistics = async (spreadsheetId, SHEET, DATA) => {
   const nextAlphRange = getNextAlphRange(nextColNum.start);
 
   const range = SHEET.NAME + nextAlphRange;
-  console.log("data", DATA);
+  log("data", DATA);
 
   await statisticsToSheet(spreadsheetId, range, DATA);
 };
