@@ -7,6 +7,8 @@ const getAuthenticatedSheet = require("./authSheets");
  */
 const len = x => x.length;
 
+const makeSpreadSheetUrl = id => `https://docs.google.com/spreadsheets/d/${id}`;
+
 /**
  * @param {Object} params This should be an Object with fields you need in order to manipulate the date.
  * Currently there are 2 fields used which is: `monthInText` and `dayInText`
@@ -157,5 +159,6 @@ module.exports = {
   emojis,
   reduceDay,
   increaseDay,
+  makeSpreadSheetUrl,
   getAuthenticatedSheet
 };

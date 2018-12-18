@@ -2,8 +2,10 @@ const Telegram = require("telegram-node-bot");
 const TelegramBaseController = Telegram.TelegramBaseController;
 const UserController = require("./userController");
 const userController = new UserController();
+const { createNewSpreadSheet } = require("./spreadSheetController");
 const {
-  emojis: { wave, thumbsUp, thumbsDown, ok }
+  emojis: { wave, thumbsUp, thumbsDown, ok },
+  makeSpreadSheetUrl
 } = require("../modules");
 
 class StartController extends TelegramBaseController {
@@ -86,21 +88,23 @@ class StartController extends TelegramBaseController {
   }
 
   /**
-   * @param {String} userName Name of the user
+   * @param {String} name Name of the user
    * @param {Number} telegramId Telegram ID of user
    */
-  async saveNewUser(userName, telegramId) {
+  async saveNewUser(name, telegramId) {
     console.log("A new user was added");
+    const id = await createNewSpreadSheet(name);
+    const url = makeSpreadSheetUrl(id);
 
     await userController.addUser({
-      name: userName,
+      name,
       telegramId,
       spreadsheet: {
-        id: "",
-        url: ""
+        id,
+        url
       }
     });
-    this.nameOfUser = userName;
+    this.nameOfUser = name;
   }
 
   get routes() {

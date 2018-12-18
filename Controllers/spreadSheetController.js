@@ -1,3 +1,4 @@
+const { log } = console;
 const { getAuthenticatedSheet } = require("../modules");
 const updateSheet = require("../modules/updateSheet");
 
@@ -20,7 +21,7 @@ const createNewSpreadSheet = title => {
         if (err) {
           rej(err);
         } else {
-          res(spreadsheet);
+          res(spreadsheet.data.spreadsheetId);
         }
       }
     );
