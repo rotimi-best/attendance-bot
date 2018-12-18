@@ -1,6 +1,5 @@
 const Telegram = require("telegram-node-bot");
 const TelegramBaseController = Telegram.TelegramBaseController;
-const db = require("../Db");
 
 class HelpController extends TelegramBaseController {
   /**
