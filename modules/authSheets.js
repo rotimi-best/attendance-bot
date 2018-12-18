@@ -3,21 +3,18 @@ const readline = require("readline");
 const { google } = require("googleapis");
 
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
-const TOKEN_PATH = `${process.cwd()}/credentials/tokens.json`;
+const TOKEN_PATH = `${process.cwd()}/tokens.json`;
 
 /**
  * Authenticate your function to use Google Spreadsheet
  * @param {Function} sheetFunc Function you want to authenticate
  */
 const authenticateSpreadSheet = sheetFunc => {
-  fs.readFile(
-    `${process.cwd()}/credentials/credentials.json`,
-    (err, content) => {
-      if (err) return console.log("Error loading client secret file:", err);
-      // Authorize a client with credentials, then call the Google Sheets API.
-      authorize(JSON.parse(content), sheetFunc);
-    }
-  );
+  fs.readFile(`${process.cwd()}/creds.json`, (err, content) => {
+    if (err) return console.log("Error loading client secret file:", err);
+    // Authorize a client with credentials, then call the Google Sheets API.
+    authorize(JSON.parse(content), sheetFunc);
+  });
 
   /**
    * Create an OAuth2 client with the given credentials, and then execute the
