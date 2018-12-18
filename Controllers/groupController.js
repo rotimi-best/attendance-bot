@@ -128,7 +128,7 @@ class GroupController extends TelegramBaseController {
     const userController = new UserController();
     const user = await userController.getUser({ telegramId });
 
-    const [{ name, telegramId, spreadsheet }] = user;
+    const [{ name, spreadsheet }] = user;
 
     this.userObj = { userName: name, telegramId, spreadsheet };
     return this.userObj;

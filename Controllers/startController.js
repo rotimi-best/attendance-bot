@@ -54,48 +54,44 @@ class StartController extends TelegramBaseController {
 
     $.waitForRequest.then(async $ => {
       if ($.message.text === `Yes ${thumbsUp}`) {
-        $.sendMessage(
-          `Okay, Thanks ${userName} ${ok}.\n\nTo begin taking attendance you need to create a group. Use the /newgroup command for that.`,
-          {
-            reply_markup: JSON.stringify({
-              remove_keyboard: true
-            })
-          }
-        );
-        await this.saveNewUser(userName, telegramId);
+        await replyNewUser($, userName, telegramId);
       } else if ($.message.text === `No ${thumbsDown}`) {
         $.sendMessage(`What should I then call you?`);
 
         $.waitForRequest.then(async $ => {
           userName = $.message.text;
-          try {
-            const spreadSheetUrl = await this.saveNewUser(userName, telegramId);
-
-            $.sendMessage(
-              `Okay, Thanks ${userName} ${ok}, I created a new spreadsheet for you where I will store all your attendances, [open it](${spreadSheetUrl}).\n\nTo begin taking attendance you need to create a group. Use the /newgroup command for that.`,
-              {
-                parse_mode: "Markdown",
-                reply_markup: JSON.stringify({
-                  remove_keyboard: true
-                })
-              }
-            );
-          } catch (error) {
-            $.sendMessage(
-              `Sorry ${userName} something went I couldn't create a spreadsheet for you. My creator will fix it`,
-              {
-                parse_mode: "Markdown",
-                reply_markup: JSON.stringify({
-                  remove_keyboard: true
-                })
-              }
-            );
-
-            console.log(error);
-          }
+          await replyNewUser($, userName, telegramId);
         });
       }
     });
+  }
+
+  async replyNewUser($, userName, telegramId) {
+    try {
+      const spreadSheetUrl = await this.saveNewUser(userName, telegramId);
+
+      $.sendMessage(
+        `Okay, Thanks ${userName} ${ok}, I created a new spreadsheet for you where I will store all your attendances, [open it](${spreadSheetUrl}).\n\nTo begin taking attendance you need to create a group. Use the /newgroup command for that.`,
+        {
+          parse_mode: "Markdown",
+          reply_markup: JSON.stringify({
+            remove_keyboard: true
+          })
+        }
+      );
+    } catch (error) {
+      $.sendMessage(
+        `Sorry ${userName} something went I couldn't create a spreadsheet for you. My creator will fix it`,
+        {
+          parse_mode: "Markdown",
+          reply_markup: JSON.stringify({
+            remove_keyboard: true
+          })
+        }
+      );
+
+      console.log(error);
+    }
   }
 
   testHandler() {
