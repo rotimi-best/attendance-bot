@@ -50,11 +50,12 @@ class GroupController extends TelegramBaseController {
         }
       };
 
+      await addGroup(groupData);
+      console.log(groupData);
+
       $.sendMessage(
         `Great job ${userName}, group created and I also created a new sheet in your spreadsheet called ${groupName}.\n\nUse /viewattendance to get the link`
       );
-      await addGroup(groupData);
-      console.log(groupData);
     });
   }
 
