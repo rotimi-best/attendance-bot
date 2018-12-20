@@ -1,6 +1,7 @@
 const { log } = console;
 const Telegram = require("telegram-node-bot");
 const TelegramBaseController = Telegram.TelegramBaseController;
+const { findUser } = require("../Db/User");
 const { addAttendance, findAttendance } = require("../Db/Attendance");
 const {
   emojis: { thumbsUp, thumbsDown },
@@ -72,15 +73,31 @@ class AttendanceController extends TelegramBaseController {
    */
   async getAttendanceHandler($) {
     const ownerTelegramId = $.message.chat.id;
-
+    const [
+      {
+        spreadsheet: { url }
+      }
+    ] = await findUser({ telegramId: ownerTelegramId });
     const attendances = await findAttendance({ ownerTelegramId });
-    console.log(attendances);
 
-    $.sendMessage(`${$.message.text} Okay`, {
-      reply_markup: JSON.stringify({
-        remove_keyboard: true
-      })
-    });
+    if (len(attendances)) {
+      $.sendMessage(`Okay click [the link](${url}) to view your attendance`, {
+        parse_mode: "Markdown",
+        reply_markup: JSON.stringify({
+          remove_keyboard: true
+        })
+      });
+    } else {
+      $.sendMessage(
+        `You have no attendance, use /newattendance to create one and it will appear in your [spreadsheet](${url})`,
+        {
+          parse_mode: "Markdown",
+          reply_markup: JSON.stringify({
+            remove_keyboard: true
+          })
+        }
+      );
+    }
   }
 
   /**
