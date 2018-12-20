@@ -47,10 +47,10 @@ const createNewSheet = (spreadsheetId, title) => {
           ]
         }
       },
-      async (err, res) => {
+      async (err, response) => {
         if (err) rej("createNewSheet Error: " + err);
 
-        const sheet_id = res.data.replies[0].addSheet.properties.sheetId;
+        const sheet_id = response.data.replies[0].addSheet.properties.sheetId;
         console.log("\nCreated New sheet", sheet_id);
         res(sheet_id);
       }

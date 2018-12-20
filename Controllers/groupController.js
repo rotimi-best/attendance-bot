@@ -35,7 +35,8 @@ class GroupController extends TelegramBaseController {
         ? students.map(stud => stud.trim())
         : students;
 
-      const sheetId = createNewSheet(spreadsheet.id, groupName);
+      const sheetId = await createNewSheet(spreadsheet.id, groupName);
+
       const groupData = {
         name: groupName,
         students: trimmedStudents,
@@ -50,7 +51,7 @@ class GroupController extends TelegramBaseController {
       };
 
       $.sendMessage(
-        `Great ${userName}, Your group has successfully been created.`
+        `Great job ${userName}, group created and I also created a new sheet in your spreadsheet called ${groupName}.\n\nUse /viewattendance to get the link`
       );
       await addGroup(groupData);
       console.log(groupData);
