@@ -1,5 +1,6 @@
 const { log } = console;
 const {
+  date,
   getAuthenticatedSheet,
   getArrayForSheetFromAttendance
 } = require("../modules");
@@ -62,8 +63,6 @@ const createNewSheet = (spreadsheetId, title) => {
 };
 
 const addStudentsToSheet = async (spreadsheetId, SHEET, students) => {
-  // const spreadsheetId = "1fAQSSjSDmWLmmm5WDPOhSdanD9KiAlbL4IObU38GTYM";
-  // const SHEET = { ID: 1089693683, NAME: "Group grace" };
   students.unshift("Students");
   console.log(DATA);
   await updateSheet(spreadsheetId, SHEET, students);
@@ -71,7 +70,10 @@ const addStudentsToSheet = async (spreadsheetId, SHEET, students) => {
 
 const pushAttendanceToSheet = async (spreadsheetId, SHEET, attendance) => {
   const attRes = getArrayForSheetFromAttendance(attendance);
+
+  attRes.unshift(date());
   console.log(attRes);
+
   await updateSheet(spreadsheetId, SHEET, attRes);
 };
 
