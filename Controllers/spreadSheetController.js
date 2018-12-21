@@ -58,7 +58,22 @@ const createNewSheet = (spreadsheetId, title) => {
   });
 };
 
-const newSheetWithStudents = () => {};
+const newSheetWithStudents = async sheet => {
+  const spreadsheetId = "1fAQSSjSDmWLmmm5WDPOhSdanD9KiAlbL4IObU38GTYM";
+  const SHEET = { ID: 1089693683, NAME: "Group grace" };
+
+  await updateSheet(spreadsheetId, SHEET, [
+    "Numbers",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6"
+  ]);
+};
+
+newSheetWithStudents();
 
 module.exports = {
   updateSheet,

@@ -1,5 +1,5 @@
 const { log } = console;
-const { date, emojis, getAuthenticatedSheet } = require("./index");
+const { date, len, emojis, getAuthenticatedSheet } = require("./index");
 const { ALPHABETS } = require("../helpers/constants");
 
 const statisticsToSheet = async (spreadsheetId, range, values) => {
@@ -20,15 +20,17 @@ const statisticsToSheet = async (spreadsheetId, range, values) => {
       }
     },
     (err, result) => {
-      if (err) log("companyspreadsheet The API returned an error: " + err);
-      log("Pushed into sheet", result);
+      if (err)
+        return log("companyspreadsheet The API returned an error: " + err);
+      else log("Pushed into sheet", result.data);
     }
   );
 };
 
-const drawTableBorder = async (
+const styleSheet = async (
   spreadsheetId,
   sheetId,
+  endRowIndex,
   startColumnIndex,
   endColumnIndex
 ) => {
@@ -36,12 +38,32 @@ const drawTableBorder = async (
   const number = 0;
   const requests = [];
 
+  // Align text center
+  requests.push({
+    repeatCell: {
+      range: {
+        sheetId: sheetId,
+        startRowIndex: 0,
+        endRowIndex,
+        startColumnIndex: startColumnIndex,
+        endColumnIndex: endColumnIndex
+      },
+      cell: {
+        userEnteredFormat: {
+          horizontalAlignment: "CENTER"
+        }
+      },
+      fields: "userEnteredFormat.horizontalAlignment"
+    }
+  });
+
+  // Draw border
   requests.push({
     updateBorders: {
       range: {
         sheetId: sheetId,
         startRowIndex: 0,
-        endRowIndex: 4,
+        endRowIndex,
         startColumnIndex: startColumnIndex,
         endColumnIndex: endColumnIndex
       },
@@ -102,6 +124,31 @@ const drawTableBorder = async (
     }
   });
 
+  // Make first row frozen
+  requests.push({
+    updateSheetProperties: {
+      properties: { gridProperties: { frozenRowCount: 1 } },
+      fields: "gridProperties.frozenRowCount"
+    }
+  });
+
+  // Make first row bold
+  requests.push({
+    repeatCell: {
+      range: {
+        sheetId,
+        startRowIndex: 0,
+        endRowIndex: 1
+      },
+      cell: {
+        userEnteredFormat: {
+          textFormat: { bold: true }
+        }
+      },
+      fields: "userEnteredFormat.textFormat.bold"
+    }
+  });
+
   sheets.spreadsheets.batchUpdate(
     {
       spreadsheetId,
@@ -131,8 +178,11 @@ const getNextColumnNum = (spreadsheetId, range) => {
       },
       (err, result) => {
         if (err) rej("The API returned an error: " + err);
-        const rows = result.data.values;
-        const obj = { start: rows[0].length, end: rows[0].length + 1 };
+        const rows = result.data.values || [[]];
+        const obj = {
+          start: rows[0].length,
+          end: rows[0].length + 1
+        };
         res(obj);
       }
     );
@@ -159,9 +209,10 @@ const getNextAlphRange = columnNo => {
 const updateStatistics = async (spreadsheetId, SHEET, DATA) => {
   const nextColNum = await getNextColumnNum(spreadsheetId, SHEET.NAME);
 
-  await drawTableBorder(
+  await styleSheet(
     spreadsheetId,
     SHEET.ID,
+    len(DATA),
     nextColNum.start,
     nextColNum.end
   );

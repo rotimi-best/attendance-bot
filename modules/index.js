@@ -151,6 +151,26 @@ const emojis = {
   thumbsDown: "👎",
   ok: "👌"
 };
+/**
+ *
+ * @param {Array} results attendance result of a group
+ * results: 
+ * [{
+      studentName: String,
+      present: Boolean
+    }]
+ */
+const generateArrayFromAttendance = results => {
+  const res = [];
+  for (const result of results) {
+    const { studentName, present } = result;
+
+    if (present) res.push("+");
+    else res.push("-");
+  }
+
+  return res;
+};
 
 module.exports = {
   len,
