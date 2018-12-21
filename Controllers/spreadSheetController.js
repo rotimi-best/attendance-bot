@@ -61,8 +61,9 @@ const createNewSheet = (spreadsheetId, title) => {
 const addStudentsToSheet = async (spreadsheetId, SHEET, students) => {
   // const spreadsheetId = "1fAQSSjSDmWLmmm5WDPOhSdanD9KiAlbL4IObU38GTYM";
   // const SHEET = { ID: 1089693683, NAME: "Group grace" };
-  const DATA = students.unshift("Students");
-  await updateSheet(spreadsheetId, SHEET, DATA);
+  students.unshift("Students");
+  console.log(DATA);
+  await updateSheet(spreadsheetId, SHEET, students);
 };
 
 module.exports = {

@@ -53,12 +53,13 @@ class GroupController extends TelegramBaseController {
         }
       };
 
-      const SHEET = { ID: sheetId, NAME: groupName };
-      await addStudentsToSheet(spreadsheet.id, SHEET, trimmedStudents);
-
+      console.log(groupData);
       await addGroup(groupData);
 
-      console.log(groupData);
+      setTimeout(async () => {
+        const SHEET = { ID: sheetId, NAME: groupName };
+        await addStudentsToSheet(spreadsheet.id, SHEET, trimmedStudents);
+      }, 2000);
 
       $.sendMessage(
         `Great job ${userName}, group created and I also created a new sheet in your spreadsheet called ${groupName}.\n\nUse /viewattendance to get the link`
