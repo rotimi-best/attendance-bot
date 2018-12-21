@@ -151,25 +151,21 @@ const emojis = {
   thumbsDown: "👎",
   ok: "👌"
 };
+
 /**
- *
+ * Get an array of "+" and "-" from the attendance to push into sheet
  * @param {Array} results attendance result of a group
- * results: 
- * [{
-      studentName: String,
-      present: Boolean
-    }]
  */
-const generateArrayFromAttendance = results => {
-  const res = [];
+const getArrayForSheetFromAttendance = results => {
+  const attendanceRes = [];
   for (const result of results) {
-    const { studentName, present } = result;
+    const { present } = result || { present: false };
 
     if (present) res.push("+");
     else res.push("-");
   }
 
-  return res;
+  return attendanceRes;
 };
 
 module.exports = {
@@ -180,5 +176,6 @@ module.exports = {
   reduceDay,
   increaseDay,
   makeSpreadSheetUrl,
-  getAuthenticatedSheet
+  getAuthenticatedSheet,
+  getArrayForSheetFromAttendance
 };
