@@ -17,19 +17,21 @@ const makeSpreadSheetUrl = id => `https://docs.google.com/spreadsheets/d/${id}`;
  */
 const date = params => {
   const today = new Date();
-  const daysInTextArr = CONSTANTS.DAYS.LONG;
   const { monthInText, dayInText } = params || false;
   const day = today.getDate();
   const dayText = today.getDay();
   const month = monthInText ? today.getMonth() : today.getMonth() + 1;
   const year = today.getFullYear();
-  const monthArr = CONSTANTS.MONTHS.SHORT;
 
   let returnVal;
 
-  if (dayInText) return daysInTextArr[dayText];
+  if (dayInText) {
+    const daysInTextArr = CONSTANTS.DAYS.LONG;
+    return daysInTextArr[dayText];
+  }
 
   if (monthInText) {
+    const monthArr = CONSTANTS.MONTHS.SHORT;
     returnVal = `${year}-${monthArr[month]}-${day < 10 ? "0" + day : day}`;
   } else {
     returnVal = `${year}-${month < 10 ? "0" + month : month}-${
@@ -161,8 +163,8 @@ const getArrayForSheetFromAttendance = results => {
   for (const result of results) {
     const { present } = result || { present: false };
 
-    if (present) attendanceRes.push("+");
-    else attendanceRes.push("-");
+    if (present) attendanceRes.push("1");
+    else attendanceRes.push("0");
   }
 
   return attendanceRes;

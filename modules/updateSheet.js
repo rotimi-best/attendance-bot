@@ -162,7 +162,6 @@ const styleSheet = async (
           "The table was successfully drawn on the sheet",
           emojis.coolGlasses
         );
-        log(res.data);
       }
     }
   );
@@ -207,11 +206,11 @@ const getNextAlphRange = columnNo => {
 };
 
 const updateStatistics = async (spreadsheetId, SHEET, DATA) => {
-  const nextColNum = await getNextColumnNum(spreadsheetId, SHEET.NAME);
+  const nextColNum = await getNextColumnNum(spreadsheetId, SHEET.name);
 
   await styleSheet(
     spreadsheetId,
-    SHEET.ID,
+    SHEET.id,
     len(DATA),
     nextColNum.start,
     nextColNum.end
@@ -219,7 +218,7 @@ const updateStatistics = async (spreadsheetId, SHEET, DATA) => {
 
   const nextAlphRange = getNextAlphRange(nextColNum.start);
 
-  const range = SHEET.NAME + nextAlphRange;
+  const range = SHEET.name + nextAlphRange;
   log("data", DATA);
 
   await statisticsToSheet(spreadsheetId, range, DATA);

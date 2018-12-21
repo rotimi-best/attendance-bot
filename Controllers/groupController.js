@@ -57,7 +57,7 @@ class GroupController extends TelegramBaseController {
       await addGroup(groupData);
 
       setTimeout(async () => {
-        const SHEET = { ID: sheetId, NAME: groupName };
+        const SHEET = { id: sheetId, name: groupName };
         await addStudentsToSheet(spreadsheet.id, SHEET, trimmedStudents);
       }, 2000);
 

@@ -64,13 +64,15 @@ const createNewSheet = (spreadsheetId, title) => {
 
 const addStudentsToSheet = async (spreadsheetId, SHEET, students) => {
   students.unshift("Students");
-  console.log(DATA);
+
+  console.log(students);
+
   await updateSheet(spreadsheetId, SHEET, students);
 };
 
 const pushAttendanceToSheet = async (spreadsheetId, SHEET, attendance) => {
   const attRes = getArrayForSheetFromAttendance(attendance);
-
+  console.log(attRes);
   attRes.unshift(date());
   console.log(attRes);
 
