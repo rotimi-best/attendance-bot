@@ -69,6 +69,7 @@ class GroupController extends TelegramBaseController {
 
   /**
    * Get group
+   *
    * @param {Scope} $ Scope of message
    * @param {String} name Name of the group
    */
@@ -79,12 +80,12 @@ class GroupController extends TelegramBaseController {
 
     if (groupObj) {
       const { groupName } = groupObj;
-      const groups = await findGroup({
+      const group = await findGroup({
         name: groupName,
         owner: { telegramId, name: userName }
       });
 
-      if (len(groups)) return groups;
+      if (len(group)) return group;
       else return (groupAlreadyExist = false);
     }
 
@@ -116,6 +117,7 @@ class GroupController extends TelegramBaseController {
 
   /**
    * Update with some params
+   *
    * @param {Scope} $
    */
   async updateGroupHandler($) {
@@ -124,6 +126,7 @@ class GroupController extends TelegramBaseController {
 
   /**
    * Delete a group
+   *
    * @param {Scope} $
    */
   async deleteGroupHandler($) {

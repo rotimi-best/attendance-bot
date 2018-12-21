@@ -3,6 +3,7 @@ const Telegram = require("telegram-node-bot");
 const TelegramBaseController = Telegram.TelegramBaseController;
 const { findUser } = require("../Db/User");
 const { addAttendance, findAttendance } = require("../Db/Attendance");
+const { pushAttendanceToSheet } = require("./spreadSheetController");
 const {
   emojis: { thumbsUp, thumbsDown },
   len
@@ -17,7 +18,9 @@ class AttendanceController extends TelegramBaseController {
    * @param {Scope} $
    */
   async takeAttendanceHandler($, group) {
-    const [{ name, students, spreadsheetLink, owner }] = group;
+    const telegramId = $.message.chat.id;
+    const [{ spreadsheet }] = await findUser({ telegramId });
+    const [{ name, students, sheet, owner }] = group;
 
     $.sendMessage(
       `Alright ${
@@ -33,12 +36,13 @@ class AttendanceController extends TelegramBaseController {
       groupName: name,
       ownerTelegramId: owner.telegramId
     };
-    const attendanceRes = [];
 
     if (len(students)) {
-      for (const student of students) {
+      const attendanceRes = [];
+
+      for (const studentName of students) {
         $.runMenu({
-          message: student,
+          message: studentName,
           layout: 2,
           [thumbsUp]: () => {},
           [thumbsDown]: () => {}
@@ -48,7 +52,6 @@ class AttendanceController extends TelegramBaseController {
           message: { text }
         } = await $.waitForRequest;
 
-        const studentName = student;
         const present = text === thumbsUp ? true : false;
 
         attendanceRes.push({ studentName, present });
@@ -56,7 +59,15 @@ class AttendanceController extends TelegramBaseController {
 
       attendance.result = attendanceRes;
 
+      console.log("Attendance just created", attendance);
+
       await addAttendance(attendance);
+
+      setTimeout(async () => {
+        console.log("Pushing attendance into spreadsheet");
+        await pushAttendanceToSheet(spreadsheet.id, sheet, attendanceRes);
+      }, 2000);
+
       $.sendMessage(`Great ${owner.name}, Done!`, {
         reply_markup: JSON.stringify({
           keyboard: [[{ text: "View Result" }]]

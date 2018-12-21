@@ -1,5 +1,8 @@
 const { log } = console;
-const { getAuthenticatedSheet } = require("../modules");
+const {
+  getAuthenticatedSheet,
+  getArrayForSheetFromAttendance
+} = require("../modules");
 const updateSheet = require("../modules/updateSheet");
 
 const createNewSpreadSheet = title => {
@@ -66,9 +69,16 @@ const addStudentsToSheet = async (spreadsheetId, SHEET, students) => {
   await updateSheet(spreadsheetId, SHEET, students);
 };
 
+const pushAttendanceToSheet = async (spreadsheetId, SHEET, attendance) => {
+  const attRes = getArrayForSheetFromAttendance(attendance);
+  console.log(attRes);
+  await updateSheet(spreadsheetId, SHEET, attRes);
+};
+
 module.exports = {
   updateSheet,
   createNewSheet,
+  addStudentsToSheet,
   createNewSpreadSheet,
-  addStudentsToSheet
+  pushAttendanceToSheet
 };
