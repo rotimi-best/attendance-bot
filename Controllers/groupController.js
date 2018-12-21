@@ -3,7 +3,10 @@ const TelegramBaseController = Telegram.TelegramBaseController;
 const UserController = require("./userController");
 const AttendanceController = require("./attendanceController");
 const attendanceController = new AttendanceController();
-const { createNewSheet } = require("./spreadSheetController");
+const {
+  createNewSheet,
+  addStudentsToSheet
+} = require("./spreadSheetController");
 const { addGroup, findGroup } = require("../Db/Groups");
 const {
   DB_COLLECTIONS: { USERS, GROUPS, ATTENDANCES }
@@ -50,7 +53,11 @@ class GroupController extends TelegramBaseController {
         }
       };
 
+      const SHEET = { ID: sheetId, NAME: groupName };
+      await addStudentsToSheet(spreadsheet.id, SHEET, trimmedStudents);
+
       await addGroup(groupData);
+
       console.log(groupData);
 
       $.sendMessage(

@@ -58,26 +58,16 @@ const createNewSheet = (spreadsheetId, title) => {
   });
 };
 
-const newSheetWithStudents = async sheet => {
-  const spreadsheetId = "1fAQSSjSDmWLmmm5WDPOhSdanD9KiAlbL4IObU38GTYM";
-  const SHEET = { ID: 1089693683, NAME: "Group grace" };
-
-  await updateSheet(spreadsheetId, SHEET, [
-    "Numbers",
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6"
-  ]);
+const addStudentsToSheet = async (spreadsheetId, SHEET, students) => {
+  // const spreadsheetId = "1fAQSSjSDmWLmmm5WDPOhSdanD9KiAlbL4IObU38GTYM";
+  // const SHEET = { ID: 1089693683, NAME: "Group grace" };
+  const DATA = students.unshift("Students");
+  await updateSheet(spreadsheetId, SHEET, DATA);
 };
-
-newSheetWithStudents();
 
 module.exports = {
   updateSheet,
   createNewSheet,
   createNewSpreadSheet,
-  newSheetWithStudents
+  addStudentsToSheet
 };
