@@ -161,8 +161,8 @@ const getArrayForSheetFromAttendance = results => {
   for (const result of results) {
     const { present } = result || { present: false };
 
-    if (present) res.push("+");
-    else res.push("-");
+    if (present) attendanceRes.push("+");
+    else attendanceRes.push("-");
   }
 
   return attendanceRes;
