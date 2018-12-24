@@ -71,7 +71,7 @@ class AttendanceController extends TelegramBaseController {
           sheet
         );
         await pushAttendanceToSheet(spreadsheet.id, sheet, attendanceRes);
-      }, 2000);
+      }, 1000);
 
       $.sendMessage(`Great ${owner.name}, Done!`, {
         reply_markup: JSON.stringify({

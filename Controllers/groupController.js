@@ -76,7 +76,7 @@ class GroupController extends TelegramBaseController {
   async getGroupHandler($, groupObj) {
     const telegramId = $.message.chat.id;
     const { userName } = await this.getUser(telegramId);
-    let groupAlreadyExist = null;
+    const groupAlreadyExist = false;
 
     if (groupObj) {
       const { groupName } = groupObj;
@@ -86,33 +86,10 @@ class GroupController extends TelegramBaseController {
       });
 
       if (len(group)) return group;
-      else return (groupAlreadyExist = false);
+      else return groupAlreadyExist;
     }
 
-    //Find all groups created by this particular user
-    const groups = await findGroup({
-      owner: { telegramId, name: userName }
-    });
-
-    if (len(groups)) {
-      const groupsMenu = {
-        message: `Here you go ${userName}:`,
-        resizeKeyboard: true,
-        layout: 2
-      };
-
-      groups.forEach(({ name }) => {
-        groupsMenu[name] = async () => {
-          await this.groupDetailsMenu($, name);
-        };
-      });
-
-      $.runMenu(groupsMenu);
-    } else {
-      $.sendMessage(
-        `Sorry ${userName}, you havn't created any group yet, use the /newgroup command to create one.`
-      );
-    }
+    await getGroupMenu($, telegramId);
   }
 
   /**
@@ -121,7 +98,13 @@ class GroupController extends TelegramBaseController {
    * @param {Scope} $
    */
   async updateGroupHandler($) {
-    $.sendMessage(`${$.message.text} is still under production`);
+    const telegramId = $.message.chat.id;
+
+    $.sendMessage(`Okay `);
+
+    // const {
+    // message: { text }
+    // } = await $.waitForRequest;
   }
 
   /**
@@ -220,6 +203,34 @@ class GroupController extends TelegramBaseController {
     )}\n<b>Students</b>: ${studentList}`;
 
     return groupDetail;
+  }
+
+  async getGroupMenu($, telegramId) {
+    const { userName } = await this.getUser(telegramId);
+
+    const groups = await findGroup({
+      owner: { telegramId, name: userName }
+    });
+
+    if (len(groups)) {
+      const groupsMenu = {
+        message: `Choose a group ${userName}:`,
+        resizeKeyboard: true,
+        layout: 2
+      };
+
+      groups.forEach(({ name }) => {
+        groupsMenu[name] = async () => {
+          await this.groupDetailsMenu($, name);
+        };
+      });
+
+      $.runMenu(groupsMenu);
+    } else {
+      $.sendMessage(
+        `Sorry ${userName}, you havn't created any group yet, use the /newgroup command to create one.`
+      );
+    }
   }
 
   get routes() {
