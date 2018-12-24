@@ -89,7 +89,7 @@ class GroupController extends TelegramBaseController {
       else return groupAlreadyExist;
     }
 
-    await getGroupMenu($, telegramId);
+    await getGroupMenu($, telegramId, this.groupDetailsMenu);
   }
 
   /**
@@ -172,8 +172,7 @@ class GroupController extends TelegramBaseController {
     };
   }
 
-  async groupDetailsMenu($, groupName) {
-    const group = await this.getGroupHandler($, { groupName });
+  async groupDetailsMenu($, group) {
     const groupDetail = this.groupDetails(group);
 
     $.runMenu({
@@ -205,7 +204,7 @@ class GroupController extends TelegramBaseController {
     return groupDetail;
   }
 
-  async getGroupMenu($, telegramId) {
+  async getGroupMenu($, telegramId, callbackOnClickGroup) {
     const { userName } = await this.getUser(telegramId);
 
     const groups = await findGroup({
@@ -219,9 +218,9 @@ class GroupController extends TelegramBaseController {
         layout: 2
       };
 
-      groups.forEach(({ name }) => {
-        groupsMenu[name] = async () => {
-          await this.groupDetailsMenu($, name);
+      groups.forEach(group => {
+        groupsMenu[group.name] = async () => {
+          await callbackOnClickGroup($, group);
         };
       });
 
