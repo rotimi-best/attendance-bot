@@ -93,11 +93,26 @@ class GroupController extends TelegramBaseController {
   }
 
   /**
-   * Update with some params
+   * Rename a group
    *
    * @param {Scope} $
    */
-  async updateGroupHandler($) {
+  async renameGroupHandler($) {
+    const telegramId = $.message.chat.id;
+
+    $.sendMessage(`Okay `);
+
+    // const {
+    // message: { text }
+    // } = await $.waitForRequest;
+  }
+
+  /**
+   * Add students to a group
+   *
+   * @param {Scope} $
+   */
+  async addStudentsHandler($) {
     const telegramId = $.message.chat.id;
 
     $.sendMessage(`Okay `);
@@ -236,7 +251,8 @@ class GroupController extends TelegramBaseController {
     return {
       addGroupCommand: "addGroupHandler",
       getGroupCommand: "getGroupHandler",
-      updateGroupCommand: "updateGroupHandler",
+      renameGroupCommand: "renameGroupHandler",
+      addStudentsCommand: "addStudentsHandler",
       deleteGroupCommand: "deleteGroupHandler"
     };
   }

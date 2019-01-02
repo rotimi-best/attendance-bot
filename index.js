@@ -31,9 +31,9 @@ bot.router
   .when(new TextCommand("/start", "startCommand"), new StartController())
   .when(new TextCommand("/newgroup", "addGroupCommand"), new GroupController())
   .when(new TextCommand("/mygroups", "getGroupCommand"), new GroupController())
-  .when(new TextCommand("/rename", "updateGroupCommand"), new GroupController())
+  .when(new TextCommand("/rename", "renameGroupCommand"), new GroupController())
   .when(
-    new TextCommand("/addstudent", "updateGroupCommand"),
+    new TextCommand("/addstudent", "addStudentsCommand"),
     new GroupController()
   )
   .when(
