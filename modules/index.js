@@ -21,7 +21,10 @@ const date = params => {
   const day = today.getDate();
   const dayText = today.getDay();
   const month = monthInText ? today.getMonth() : today.getMonth() + 1;
-  const year = today.getFullYear();
+  const year = today
+    .getFullYear()
+    .toString()
+    .substr(2, 2);
 
   let returnVal;
 
@@ -37,6 +40,9 @@ const date = params => {
     returnVal = `${year}-${month < 10 ? "0" + month : month}-${
       day < 10 ? "0" + day : day
     }`;
+    returnVal = `${day < 10 ? "0" + day : day}-${
+      month < 10 ? "0" + month : month
+    }-${year}`;
   }
 
   return returnVal;

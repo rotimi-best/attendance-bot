@@ -12,10 +12,7 @@ const OtherwiseController = require("./Controllers/otherwiseController");
 const CallbackQueryController = require("./callbackQueries");
 const { MONGO_URI } = require("./helpers/config");
 
-mongoose.connect(
-  MONGO_URI,
-  { useNewUrlParser: true }
-);
+mongoose.connect(MONGO_URI, { useNewUrlParser: true });
 
 mongoose.Promise = global.Promise;
 
