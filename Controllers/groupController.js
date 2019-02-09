@@ -172,7 +172,7 @@ class GroupController extends TelegramBaseController {
         error: "Sorry, make sure it is seperated with a comma, be words only.",
         validator: (message, callback) => {
           const userReply = message.text;
-          const testIfText = /^[A-z a-z]/g.test(userReply);
+          const testIfText = /^[A-z a-z А-Я а-я А-Я а-я]/g.test(userReply);
 
           const students = userReply ? userReply.split(",") : false;
 
