@@ -53,7 +53,7 @@ class GroupController extends TelegramBaseController {
         }
       };
 
-      console.log(groupData);
+      // console.log(groupData);
       await addGroup(groupData);
 
       setTimeout(async () => {

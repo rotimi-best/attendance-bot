@@ -50,7 +50,7 @@ const authenticateSpreadSheet = sheetFunc => {
       scope: SCOPES
     });
 
-    console.log("Authorize this app by visiting this url:", authUrl);
+    // console.log("Authorize this app by visiting this url:", authUrl);
 
     const rl = readline.createInterface({
       input: process.stdin,
@@ -68,7 +68,7 @@ const authenticateSpreadSheet = sheetFunc => {
         // Store the token to disk for later program executions
         fs.writeFile(TOKEN_PATH, JSON.stringify(token), err => {
           if (err) console.error(err);
-          console.log("Token stored to", TOKEN_PATH);
+          // console.log("Token stored to", TOKEN_PATH);
         });
         callback(oAuth2Client);
       });

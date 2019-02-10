@@ -55,7 +55,7 @@ const createNewSheet = (spreadsheetId, title) => {
         if (err) rej("createNewSheet Error: " + err);
 
         const sheet_id = response.data.replies[0].addSheet.properties.sheetId;
-        console.log("\nCreated New sheet", sheet_id);
+        // console.log("\nCreated New sheet", sheet_id);
         res(sheet_id);
       }
     );
@@ -65,16 +65,16 @@ const createNewSheet = (spreadsheetId, title) => {
 const addStudentsToSheet = async (spreadsheetId, SHEET, students) => {
   students.unshift("Students");
 
-  console.log(students);
+  // console.log(students);
 
   await updateSheet(spreadsheetId, SHEET, students);
 };
 
 const pushAttendanceToSheet = async (spreadsheetId, SHEET, attendance) => {
   const attRes = getArrayForSheetFromAttendance(attendance);
-  console.log(attRes);
+  // console.log(attRes);
   attRes.unshift(date());
-  console.log(attRes);
+  // console.log(attRes);
 
   await updateSheet(spreadsheetId, SHEET, attRes);
 };

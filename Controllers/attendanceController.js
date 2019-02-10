@@ -60,16 +60,16 @@ class AttendanceController extends TelegramBaseController {
 
       attendance.result = attendanceRes;
 
-      console.log("Attendance just created", attendance);
+      // console.log("Attendance just created", attendance);
 
       await addAttendance(attendance);
 
       setTimeout(async () => {
-        console.log(
-          "Pushing attendance into spreadsheet",
-          spreadsheet.id,
-          sheet
-        );
+        // console.log(
+        //   "Pushing attendance into spreadsheet",
+        //   spreadsheet.id,
+        //   sheet
+        // );
         await pushAttendanceToSheet(spreadsheet.id, sheet, attendanceRes);
       }, 1000);
 

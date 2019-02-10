@@ -8,7 +8,7 @@ const bot = require("../helpers/botConnection").get();
 
 class CallbackQueryController extends TelegramBaseCallbackQueryController {
   async handle(query) {
-    console.log(query.data);
+    // console.log(query.data);
 
     switch (query.data) {
       case VIEW_ATTENDANCE:

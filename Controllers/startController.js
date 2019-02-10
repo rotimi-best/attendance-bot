@@ -89,12 +89,12 @@ class StartController extends TelegramBaseController {
         }
       );
 
-      console.log(error);
+      // console.log(error);
     }
   }
 
   testHandler() {
-    console.log(this.nameOfUser);
+    // console.log(this.nameOfUser);
   }
 
   /**
@@ -104,7 +104,7 @@ class StartController extends TelegramBaseController {
   saveNewUser(name, telegramId) {
     return new Promise(async (res, rej) => {
       try {
-        console.log("A new user was added");
+        // console.log("A new user was added");
         const spreadSheetId = await createNewSpreadSheet(name);
         const spreadSheetUrl = makeSpreadSheetUrl(spreadSheetId);
 
