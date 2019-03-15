@@ -35,14 +35,14 @@ const date = params => {
 
   if (monthInText) {
     const monthArr = CONSTANTS.MONTHS.SHORT;
-    returnVal = `${year}-${monthArr[month]}-${day < 10 ? "0" + day : day}`;
+    returnVal = `${day < 10 ? "0" + day : day}.${monthArr[month]}.${year}`;
   } else {
-    returnVal = `${year}-${month < 10 ? "0" + month : month}-${
-      day < 10 ? "0" + day : day
-    }`;
-    returnVal = `${day < 10 ? "0" + day : day}-${
+    // returnVal = `${year}-${month < 10 ? "0" + month : month}-${
+    //   day < 10 ? "0" + day : day
+    // }`;
+    returnVal = `${day < 10 ? "0" + day : day}.${
       month < 10 ? "0" + month : month
-    }-${year}`;
+    }.${year}`;
   }
 
   return returnVal;

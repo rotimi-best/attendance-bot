@@ -89,7 +89,7 @@ class GroupController extends TelegramBaseController {
       else return groupAlreadyExist;
     }
 
-    await getGroupMenu($, telegramId, this.groupDetailsMenu);
+    await this.getGroupMenu($, telegramId, this.groupDetailsMenu);
   }
 
   /**
@@ -97,10 +97,37 @@ class GroupController extends TelegramBaseController {
    *
    * @param {Scope} $
    */
-  async renameGroupHandler($) {
+  async renameGroupHandler($, group) {
+    const { _id, name, sheet } = group;
     const telegramId = $.message.chat.id;
 
-    $.sendMessage(`Okay `);
+    if (group) {
+      const form = {
+        newGroupName: {
+          q:
+            "What would be the name of your group?\n\nPlease it must begin with Group like: Group 1 or Group_1",
+          error: "Sorry try again, group exists or doesn't begin with Group",
+          validator: async (message, callback) => {
+            const groupName = message.text;
+            const testIfText = /^Group/g.test(groupName);
+            log("Test", testIfText);
+
+            const group = await this.getGroupHandler($, { groupName });
+            log("group", group);
+
+            if (testIfText && !group) {
+              callback(true, groupName);
+              return;
+            }
+            callback(false);
+          }
+        }
+      };
+
+      $.runForm(form, ({ newGroupName }) => {
+        console.log(newGroupName); // CONTINUE FROM HERE LATER
+      });
+    }
 
     // const {
     // message: { text }
@@ -112,7 +139,7 @@ class GroupController extends TelegramBaseController {
    *
    * @param {Scope} $
    */
-  async addStudentsHandler($) {
+  async addStudentsHandler($, group) {
     const telegramId = $.message.chat.id;
 
     $.sendMessage(`Okay `);
@@ -127,7 +154,7 @@ class GroupController extends TelegramBaseController {
    *
    * @param {Scope} $
    */
-  async deleteGroupHandler($) {
+  deleteGroupHandler($) {
     $.sendMessage(`${$.message.text} is still under production`);
   }
 
@@ -188,22 +215,7 @@ class GroupController extends TelegramBaseController {
   }
 
   async groupDetailsMenu($, group) {
-    const groupDetail = this.groupDetails(group);
-
-    $.runMenu({
-      message: groupDetail,
-      options: {
-        parse_mode: "HTML"
-      },
-      layout: 1,
-      ["Take Attendance " + write]: () => {
-        attendanceController.takeAttendanceHandler($, group);
-      }
-    });
-  }
-
-  groupDetails(group) {
-    const [{ name, students }] = group;
+    const { name, students } = group;
     let studentList = "";
 
     if (!len(students)) studentList = "None";
@@ -216,7 +228,25 @@ class GroupController extends TelegramBaseController {
       students
     )}\n<b>Students</b>: ${studentList}`;
 
-    return groupDetail;
+    $.runMenu({
+      message: groupDetail,
+      options: {
+        parse_mode: "HTML"
+      },
+      layout: 2,
+      "Take Attendance": () => {
+        attendanceController.takeAttendanceHandler($, group);
+      },
+      Delete: () => {
+        this.deleteGroupHandler($, group);
+      },
+      Rename: () => {
+        this.renameGroupHandler($, group);
+      },
+      "Add Student": () => {
+        this.addStudentsHandler($, group);
+      }
+    });
   }
 
   async getGroupMenu($, telegramId, callbackOnClickGroup) {

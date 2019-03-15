@@ -129,6 +129,82 @@ class AttendanceController extends TelegramBaseController {
    * @param {Scope} $
    */
   async updateAttendanceHandler($) {
+    const telegramId = $.message.chat.id;
+    const user = await findUser({ telegramId });
+
+    if (len(user)) {
+      // User
+      const [{ spreadsheet }] = user;
+      // Attendance
+      const allAttendance = await findAttendance({
+        ownerTelegramId: telegramId
+      });
+
+      if (len(allAttendance)) {
+        // This user has taken at least an attendance
+        const { groupName, result } = allAttendance[allAttendance.length - 1];
+        // Group
+        const group = await findGroup({ telegramId, name: groupName });
+        const [{ sheet, owner }] = group;
+        const absentStudents = result.filter(student => !student.present);
+
+        $.sendMessage(`Alright ${owner.name}, lets begin. `, {
+          reply_markup: JSON.stringify({
+            remove_keyboard: true
+          })
+        });
+
+        const attendance = {
+          groupName: name,
+          ownerTelegramId: owner.telegramId
+        };
+
+        if (len(students)) {
+          const attendanceRes = [];
+
+          for (const studentName of students) {
+            $.runMenu({
+              message: studentName,
+              layout: 2,
+              [thumbsUp]: () => {},
+              [thumbsDown]: () => {}
+            });
+
+            const {
+              message: { text }
+            } = await $.waitForRequest;
+
+            const present = text === thumbsUp ? true : false;
+
+            attendanceRes.push({ studentName, present });
+          }
+
+          attendance.result = attendanceRes;
+
+          await addAttendance(attendance);
+
+          setTimeout(async () => {
+            // console.log(
+            //   "Pushing attendance into spreadsheet",
+            //   spreadsheet.id,
+            //   sheet
+            // );
+            await pushAttendanceToSheet(spreadsheet.id, sheet, attendanceRes);
+          }, 1000);
+
+          $.sendMessage(`Great ${owner.name}, Done!`, {
+            reply_markup: JSON.stringify({
+              keyboard: [[{ text: "View Result" }]]
+            })
+          });
+        } else {
+          log("No students in this group");
+        }
+      } else {
+        // No attendance yet, user needs to create a new one
+      }
+    }
+
     $.sendMessage(`${$.message.text} is still under production`);
   }
 
