@@ -7,6 +7,8 @@ const getAuthenticatedSheet = require("./authSheets");
  */
 const len = x => x.length;
 
+const sleep = sec => new Promise(res => setTimeout(res, sec * 1000));
+
 const makeSpreadSheetUrl = id => `https://docs.google.com/spreadsheets/d/${id}`;
 
 /**
@@ -185,5 +187,6 @@ module.exports = {
   increaseDay,
   makeSpreadSheetUrl,
   getAuthenticatedSheet,
-  getArrayForSheetFromAttendance
+  getArrayForSheetFromAttendance,
+  sleep
 };

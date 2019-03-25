@@ -70,13 +70,18 @@ const addStudentsToSheet = async (spreadsheetId, SHEET, students) => {
   await updateSheet(spreadsheetId, SHEET, students);
 };
 
-const pushAttendanceToSheet = async (spreadsheetId, SHEET, attendance) => {
+const pushAttendanceToSheet = async (
+  spreadsheetId,
+  SHEET,
+  attendance,
+  nextColumn
+) => {
   const attRes = getArrayForSheetFromAttendance(attendance);
   // console.log(attRes);
   attRes.unshift(date());
   // console.log(attRes);
 
-  await updateSheet(spreadsheetId, SHEET, attRes);
+  await updateSheet(spreadsheetId, SHEET, attRes, nextColumn);
 };
 
 module.exports = {

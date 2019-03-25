@@ -167,7 +167,7 @@ const styleSheet = async (
   );
 };
 
-const getNextColumnNum = (spreadsheetId, range) => {
+const getColumnNum = (spreadsheetId, range, next = true) => {
   return new Promise(async (res, rej) => {
     const sheets = await getAuthenticatedSheet();
     sheets.spreadsheets.values.get(
@@ -178,10 +178,20 @@ const getNextColumnNum = (spreadsheetId, range) => {
       (err, result) => {
         if (err) rej("The API returned an error: " + err);
         const rows = result.data.values || [[]];
-        const obj = {
-          start: rows[0].length,
-          end: rows[0].length + 1
-        };
+        let obj = {};
+
+        if (next) {
+          obj = {
+            start: rows[0].length,
+            end: rows[0].length + 1
+          };
+        } else {
+          obj = {
+            start: rows[0].length - 1,
+            end: rows[0].length
+          };
+        }
+
         res(obj);
       }
     );
@@ -205,8 +215,8 @@ const getNextAlphRange = columnNo => {
   return nextCol;
 };
 
-const updateStatistics = async (spreadsheetId, SHEET, DATA) => {
-  const nextColNum = await getNextColumnNum(spreadsheetId, SHEET.name);
+const updateStatistics = async (spreadsheetId, SHEET, DATA, nextColumn) => {
+  const nextColNum = await getColumnNum(spreadsheetId, SHEET.name, nextColumn);
 
   await styleSheet(
     spreadsheetId,

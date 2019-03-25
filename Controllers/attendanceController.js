@@ -3,15 +3,21 @@ const Telegram = require("telegram-node-bot");
 const TelegramBaseController = Telegram.TelegramBaseController;
 const { findUser } = require("../Db/User");
 const { findGroup } = require("../Db/Groups");
-const { addAttendance, findAttendance } = require("../Db/Attendance");
+const {
+  addAttendance,
+  findAttendance,
+  updateAttendance
+} = require("../Db/Attendance");
 const { pushAttendanceToSheet } = require("./spreadSheetController");
 const {
   emojis: { thumbsUp, thumbsDown },
-  len
+  len,
+  sleep
 } = require("../modules");
 const {
   CALLBACK_DATA: { VIEW_ATTENDANCE }
 } = require("../helpers/constants");
+const bot = require("../helpers/botConnection").get();
 
 class AttendanceController extends TelegramBaseController {
   /**
@@ -60,17 +66,10 @@ class AttendanceController extends TelegramBaseController {
 
       attendance.result = attendanceRes;
 
-      // console.log("Attendance just created", attendance);
-
       await addAttendance(attendance);
 
       setTimeout(async () => {
-        // console.log(
-        //   "Pushing attendance into spreadsheet",
-        //   spreadsheet.id,
-        //   sheet
-        // );
-        await pushAttendanceToSheet(spreadsheet.id, sheet, attendanceRes);
+        await pushAttendanceToSheet(spreadsheet.id, sheet, attendanceRes, true);
       }, 1000);
 
       $.sendMessage(`Great ${owner.name}, Done!`, {
@@ -154,58 +153,139 @@ class AttendanceController extends TelegramBaseController {
           })
         });
 
-        const attendance = {
-          groupName: name,
-          ownerTelegramId: owner.telegramId
-        };
+        if (len(absentStudents)) {
+          for (const absentStudent of absentStudents) {
+            const { studentName } = absentStudent;
 
-        if (len(students)) {
-          const attendanceRes = [];
-
-          for (const studentName of students) {
-            $.runMenu({
-              message: studentName,
-              layout: 2,
-              [thumbsUp]: () => {},
-              [thumbsDown]: () => {}
+            this.updateStudentAttendance($, {
+              studentName,
+              telegramId,
+              result,
+              spreadsheet,
+              sheet
             });
-
-            const {
-              message: { text }
-            } = await $.waitForRequest;
-
-            const present = text === thumbsUp ? true : false;
-
-            attendanceRes.push({ studentName, present });
+            await sleep(0.5);
           }
 
-          attendance.result = attendanceRes;
-
-          await addAttendance(attendance);
-
-          setTimeout(async () => {
-            // console.log(
-            //   "Pushing attendance into spreadsheet",
-            //   spreadsheet.id,
-            //   sheet
-            // );
-            await pushAttendanceToSheet(spreadsheet.id, sheet, attendanceRes);
-          }, 1000);
-
-          $.sendMessage(`Great ${owner.name}, Done!`, {
-            reply_markup: JSON.stringify({
-              keyboard: [[{ text: "View Result" }]]
-            })
-          });
+          // $.sendMessage(`Great ${owner.name}, Done!`, {
+          //   reply_markup: JSON.stringify({
+          //     keyboard: [[{ text: "View Result" }]]
+          //   })
+          // });
         } else {
-          log("No students in this group");
+          log("You have no students in this group");
         }
       } else {
-        // No attendance yet, user needs to create a new one
+        $.sendMessage(
+          `No attendance yet, take an attendance to update the last one`
+        );
       }
+    } else {
+      $.sendMessage(`You haven't signup yet. Click /start to begin`);
     }
+  }
 
-    $.sendMessage(`${$.message.text} is still under production`);
+  updateStudentAttendance($, studentDetails) {
+    const {
+      studentName,
+      telegramId,
+      result,
+      spreadsheet,
+      sheet
+    } = studentDetails;
+
+    $.runInlineMenu({
+      layout: 2,
+      method: "sendMessage",
+      params: [`Имя: ${studentName}`],
+      menu: [
+        {
+          text: thumbsUp,
+          callback: async (query, message) => {
+            const {
+              message: { messageId, chat }
+            } = query;
+
+            // Edit the message by removing the like and dislike button
+            bot.api.editMessageText(
+              `Отмечали ${studentName}, что присутствует. ${thumbsUp}`,
+              {
+                chat_id: chat.id,
+                message_id: messageId
+              }
+            );
+
+            // Update database
+            const newResult = result.map(stud => {
+              if (stud.studentName === studentName) {
+                stud.present = true;
+              }
+            });
+            await updateAttendance(
+              { ownerTelegramId: telegramId },
+              {
+                result: newResult
+              }
+            );
+
+            // Update Spreadsheet
+            await await pushAttendanceToSheet(
+              spreadsheet.id,
+              sheet,
+              newResult,
+              false
+            );
+
+            // Reply callbackQuery
+            bot.api.answerCallbackQuery(query.id, {
+              text: `Обновлен.`
+            });
+          }
+        },
+        {
+          text: thumbsDown,
+          callback: (query, message) => {
+            const {
+              message: { messageId, chat }
+            } = query;
+
+            bot.api.editMessageText(
+              `Отмечали ${studentName}, что отсутствует. ${thumbsDown}`,
+              {
+                chat_id: chat.id,
+                message_id: messageId
+              }
+            );
+
+            // Update database
+            const newResult = result.map(stud => {
+              if (stud.studentName === studentName) {
+                stud.present = false;
+              }
+            });
+
+            await updateAttendance(
+              { ownerTelegramId: telegramId },
+              {
+                result: newResult
+              }
+            );
+
+            // Update Spreadsheet
+            await await pushAttendanceToSheet(
+              spreadsheet.id,
+              sheet,
+              newResult,
+              false
+            );
+
+            bot.api.answerCallbackQuery(query.id, {
+              text: `Обновлен.`
+            });
+          }
+        }
+      ]
+    });
   }
 
   get routes() {
