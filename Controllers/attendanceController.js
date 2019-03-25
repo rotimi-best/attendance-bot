@@ -229,7 +229,7 @@ class AttendanceController extends TelegramBaseController {
             );
 
             // Update Spreadsheet
-            await await pushAttendanceToSheet(
+            await pushAttendanceToSheet(
               spreadsheet.id,
               sheet,
               newResult,
@@ -244,7 +244,7 @@ class AttendanceController extends TelegramBaseController {
         },
         {
           text: thumbsDown,
-          callback: (query, message) => {
+          callback: async (query, message) => {
             const {
               message: { messageId, chat }
             } = query;
@@ -272,7 +272,7 @@ class AttendanceController extends TelegramBaseController {
             );
 
             // Update Spreadsheet
-            await await pushAttendanceToSheet(
+            await pushAttendanceToSheet(
               spreadsheet.id,
               sheet,
               newResult,
