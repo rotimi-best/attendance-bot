@@ -134,20 +134,22 @@ class AttendanceController extends TelegramBaseController {
       // User
       const [{ spreadsheet, name }] = user;
       // Attendance
-      const allAttendance = await findAttendance({
-        ownerTelegramId: telegramId
-      });
+      const allAttendance = await findAttendance(
+        {
+          ownerTelegramId: telegramId
+        },
+        { createdAt: -1 }
+      );
 
       if (len(allAttendance)) {
         // Take the last attendance taken by this user
-        const { _id, groupName, result } = allAttendance[
-          allAttendance.length - 1
-        ];
+        const { _id, groupName, result } = allAttendance[0];
         // Group
         const group = await findGroup({
           owner: { telegramId, name },
           name: groupName
         });
+
         log("Last group with attendance", group);
 
         const [{ sheet, owner }] = group;

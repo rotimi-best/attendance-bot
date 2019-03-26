@@ -18,13 +18,21 @@ const addAttendance = data => {
   });
 };
 
-const findAttendance = params => {
+const findAttendance = (findParams, sortParams) => {
   return new Promise((resolve, reject) => {
-    Attendance.find(params, (err, Attendances) => {
-      if (err) reject(`Error while finding Attendance ${err}`);
+    if (sortParams) {
+      Attendance.find(findParams).sort(sortParams, (err, Attendances) => {
+        if (err) reject(`Error while finding Attendance ${err}`);
 
-      resolve(Attendances);
-    });
+        resolve(Attendances);
+      });
+    } else {
+      Attendance.find(params, (err, Attendances) => {
+        if (err) reject(`Error while finding Attendance ${err}`);
+
+        resolve(Attendances);
+      });
+    }
   });
 };
 
