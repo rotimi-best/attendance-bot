@@ -89,7 +89,9 @@ const updateSheetWithLessonsMissed = async allAttendance => {
     }
   }
 
-  return lessonsStats;
+  const statsResult = ["Сколько пропусков", ...Object.values(lessonsStats)];
+
+  return statsResult;
 };
 
 const pushAttendanceToSheet = async (
