@@ -100,6 +100,9 @@ class GroupController extends TelegramBaseController {
    * @param {Scope} $
    */
   async renameGroupHandler($, group, thisMethods) {
+    // if ($) {
+    //   $.sendMessage(())
+    // }
     const { getGroupHandler } = thisMethods;
     const { _id, name, sheet } = group;
     const telegramId = $.message.chat.id;
@@ -150,7 +153,7 @@ class GroupController extends TelegramBaseController {
    * @param {Scope} $
    */
   deleteGroupHandler($) {
-    $.sendMessage(`${$.message.text} is still under production`);
+    $.sendMessage(`For now you can't delete a group`);
   }
 
   async getUser(telegramId) {
@@ -236,16 +239,16 @@ class GroupController extends TelegramBaseController {
       layout: 2,
       "Take Attendance": () => {
         attendanceController.takeAttendanceHandler($, group);
-      },
-      Delete: () => {
-        deleteGroupHandler($, group, thisMethods);
-      },
-      Rename: () => {
-        renameGroupHandler($, group, thisMethods);
-      },
-      "Add Student": () => {
-        addStudentsHandler($, group, thisMethods);
       }
+      // Delete: () => {
+      //   deleteGroupHandler($, group, thisMethods);
+      // },
+      // Rename: () => {
+      //   renameGroupHandler($, group, thisMethods);
+      // },
+      // "Add Student": () => {
+      //   addStudentsHandler($, group, thisMethods);
+      // }
     });
   }
 
