@@ -100,7 +100,7 @@ const updateSheetWithLessonsMissed = async (
 
   const statsResult = ["Сколько пропусков", ...Object.values(lessonsStats)];
 
-  await updateSheet(spreadsheetId, SHEET, statsResult, columnDetails);
+  await updateSheet(spreadsheetId, SHEET, statsResult, false, columnDetails);
 
   return statsResult;
 };

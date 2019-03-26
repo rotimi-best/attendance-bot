@@ -72,6 +72,16 @@ class AttendanceController extends TelegramBaseController {
       await addAttendance(attendance);
 
       setTimeout(async () => {
+        const updatedAttendance = await findAttendance({
+          groupName: name,
+          ownerTelegramId: owner.telegramId
+        });
+        await updateSheetWithLessonsMissed(
+          spreadsheet.id,
+          sheet,
+          updatedAttendance
+        );
+
         await pushAttendanceToSheet(spreadsheet.id, sheet, attendanceRes, true);
       }, 1000);
 
