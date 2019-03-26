@@ -97,7 +97,8 @@ class GroupController extends TelegramBaseController {
    *
    * @param {Scope} $
    */
-  async renameGroupHandler($, group) {
+  async renameGroupHandler($, group, thisMethods) {
+    const { getGroupHandler } = thisMethods;
     const { _id, name, sheet } = group;
     const telegramId = $.message.chat.id;
 
@@ -112,7 +113,7 @@ class GroupController extends TelegramBaseController {
             const testIfText = /^Group/g.test(groupName);
             log("Test", testIfText);
 
-            const group = await this.getGroupHandler($, { groupName });
+            const group = await getGroupHandler($, { groupName });
             log("group", group);
 
             if (testIfText && !group) {
@@ -235,13 +236,13 @@ class GroupController extends TelegramBaseController {
         attendanceController.takeAttendanceHandler($, group);
       },
       Delete: () => {
-        deleteGroupHandler($, group);
+        deleteGroupHandler($, group, thisMethods);
       },
       Rename: () => {
-        renameGroupHandler($, group);
+        renameGroupHandler($, group, thisMethods);
       },
       "Add Student": () => {
-        addStudentsHandler($, group);
+        addStudentsHandler($, group, thisMethods);
       }
     });
   }
@@ -251,7 +252,8 @@ class GroupController extends TelegramBaseController {
     const thisMethods = {
       renameGroupHandler: this.renameGroupHandler,
       addStudentsHandler: this.addStudentsHandler,
-      deleteGroupHandler: this.deleteGroupHandler
+      deleteGroupHandler: this.deleteGroupHandler,
+      getGroupHandler: this.getGroupHandler
     };
 
     const groups = await findGroup({
