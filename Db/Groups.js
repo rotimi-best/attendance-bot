@@ -30,7 +30,7 @@ const findGroup = params => {
 
 const updateGroup = (findField, setField) => {
   return new Promise((resolve, reject) => {
-    Group.update(findField, { $set: setField }, (err, res) => {
+    Group.updateOne(findField, { $set: setField }, (err, res) => {
       if (err) reject(`Error updating a Group field ${err}`);
 
       resolve(res);

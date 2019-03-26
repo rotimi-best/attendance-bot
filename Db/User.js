@@ -30,7 +30,7 @@ const findUser = params => {
 
 const updateUser = (findField, setField) => {
   return new Promise((resolve, reject) => {
-    User.update(findField, { $set: setField }, (err, res) => {
+    User.updateOne(findField, { $set: setField }, (err, res) => {
       if (err) reject(`Error updating a user field ${err}`);
 
       resolve(res);

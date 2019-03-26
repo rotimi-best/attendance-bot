@@ -70,6 +70,28 @@ const addStudentsToSheet = async (spreadsheetId, SHEET, students) => {
   await updateSheet(spreadsheetId, SHEET, students);
 };
 
+const updateSheetWithLessonsMissed = async allAttendance => {
+  const lessonsStats = {};
+
+  for (let attendance of allAttendance) {
+    const { result } = attendance;
+
+    for (let res of result) {
+      const { studentName, present } = res;
+      const absentOrPresentNo = present ? 1 : 0;
+
+      if (lessonsStats[studentName]) {
+        lessonsStats[studentName] =
+          lessonsStats[studentName] + absentOrPresentNo;
+      } else {
+        lessonsStats[studentName] = absentOrPresentNo;
+      }
+    }
+  }
+
+  return lessonsStats;
+};
+
 const pushAttendanceToSheet = async (
   spreadsheetId,
   SHEET,
@@ -89,5 +111,6 @@ module.exports = {
   createNewSheet,
   addStudentsToSheet,
   createNewSpreadSheet,
-  pushAttendanceToSheet
+  pushAttendanceToSheet,
+  updateSheetWithLessonsMissed
 };

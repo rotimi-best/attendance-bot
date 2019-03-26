@@ -8,7 +8,10 @@ const {
   findAttendance,
   updateAttendance
 } = require("../Db/Attendance");
-const { pushAttendanceToSheet } = require("./spreadSheetController");
+const {
+  pushAttendanceToSheet,
+  updateSheetWithLessonsMissed
+} = require("./spreadSheetController");
 const {
   emojis: { thumbsUp, thumbsDown },
   len,
@@ -27,7 +30,7 @@ class AttendanceController extends TelegramBaseController {
   async takeAttendanceHandler($, group) {
     const telegramId = $.message.chat.id;
     const [{ spreadsheet }] = await findUser({ telegramId });
-    const [{ name, students, sheet, owner }] = group;
+    const { name, students, sheet, owner } = group;
 
     $.sendMessage(
       `Alright ${
@@ -94,6 +97,9 @@ class AttendanceController extends TelegramBaseController {
       }
     ] = await findUser({ telegramId: ownerTelegramId });
     const attendances = await findAttendance({ ownerTelegramId });
+
+    log(updateSheetWithLessonsMissed(attendances));
+
     // TODO: Replace 0 with the right id for group.
     if (len(attendances)) {
       $.sendMessage(
@@ -128,7 +134,7 @@ class AttendanceController extends TelegramBaseController {
 
     if (len(user)) {
       // User
-      const [{ spreadsheet }] = user;
+      const [{ spreadsheet, name }] = user;
       // Attendance
       const allAttendance = await findAttendance({
         ownerTelegramId: telegramId
@@ -138,9 +144,15 @@ class AttendanceController extends TelegramBaseController {
         // This user has taken at least an attendance
         const { groupName, result } = allAttendance[allAttendance.length - 1];
         // Group
-        const group = await findGroup({ telegramId, name: groupName });
+        const group = await findGroup({
+          owner: { telegramId, name },
+          name: groupName
+        });
+        log("Last group with attendance", group);
+
         const [{ sheet, owner }] = group;
         const absentStudents = result.filter(student => !student.present);
+        log("Absent students", absentStudents);
 
         $.sendMessage(`Alright ${owner.name}, lets begin. `, {
           reply_markup: JSON.stringify({
@@ -161,12 +173,6 @@ class AttendanceController extends TelegramBaseController {
             });
             await sleep(0.5);
           }
-
-          // $.sendMessage(`Great ${owner.name}, Done!`, {
-          //   reply_markup: JSON.stringify({
-          //     keyboard: [[{ text: "View Result" }]]
-          //   })
-          // });
         } else {
           log("You have no students in this group");
         }
@@ -209,13 +215,17 @@ class AttendanceController extends TelegramBaseController {
                 message_id: messageId
               }
             );
+            console.log("\n\nFirst result", result);
 
             // Update database
             const newResult = result.map(stud => {
               if (stud.studentName === studentName) {
                 stud.present = true;
               }
+              return stud;
             });
+            console.log("\n\nFinal result", newResult);
+
             await updateAttendance(
               { ownerTelegramId: telegramId },
               {

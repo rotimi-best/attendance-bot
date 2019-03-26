@@ -30,7 +30,7 @@ const findAttendance = params => {
 
 const updateAttendance = (findField, setField) => {
   return new Promise((resolve, reject) => {
-    Attendance.update(findField, { $set: setField }, (err, res) => {
+    Attendance.updateOne(findField, { $set: setField }, (err, res) => {
       if (err) reject(`Error updating a Attendance field ${err}`);
 
       resolve(res);
