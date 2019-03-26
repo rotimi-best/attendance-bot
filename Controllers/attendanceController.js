@@ -94,7 +94,7 @@ class AttendanceController extends TelegramBaseController {
       }
     ] = await findUser({ telegramId: ownerTelegramId });
     const attendances = await findAttendance({ ownerTelegramId });
-
+    // TODO: Replace 0 with the right id for group.
     if (len(attendances)) {
       $.sendMessage(
         `Okay click [the link](${url}/edit#gid=${0}) to view your attendance`,

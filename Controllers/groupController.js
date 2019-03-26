@@ -206,7 +206,12 @@ class GroupController extends TelegramBaseController {
     };
   }
 
-  async groupDetailsMenu($, group) {
+  async groupDetailsMenu($, group, thisMethods) {
+    const {
+      renameGroupHandler,
+      addStudentsHandler,
+      deleteGroupHandler
+    } = thisMethods;
     const { name, students } = group;
     let studentList = "";
 
@@ -229,20 +234,25 @@ class GroupController extends TelegramBaseController {
       "Take Attendance": () => {
         attendanceController.takeAttendanceHandler($, group);
       },
-      "Delete": () => {
-        this.deleteGroupHandler($, group);
+      Delete: () => {
+        deleteGroupHandler($, group);
       },
-      "Rename": () => {
-        this.renameGroupHandler($, group);
+      Rename: () => {
+        renameGroupHandler($, group);
       },
       "Add Student": () => {
-        this.addStudentsHandler($, group);
+        addStudentsHandler($, group);
       }
     });
   }
 
   async getGroupMenu($, telegramId, callbackOnClickGroup) {
     const { userName } = await this.getUser(telegramId);
+    const thisMethods = {
+      renameGroupHandler: this.renameGroupHandler,
+      addStudentsHandler: this.addStudentsHandler,
+      deleteGroupHandler: this.deleteGroupHandler
+    };
 
     const groups = await findGroup({
       owner: { telegramId, name: userName }
@@ -257,7 +267,7 @@ class GroupController extends TelegramBaseController {
 
       groups.forEach(group => {
         groupsMenu[group.name] = async () => {
-          await callbackOnClickGroup($, group);
+          await callbackOnClickGroup($, group, thisMethods);
         };
       });
 
