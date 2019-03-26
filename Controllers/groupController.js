@@ -128,10 +128,6 @@ class GroupController extends TelegramBaseController {
         console.log(newGroupName); // CONTINUE FROM HERE LATER
       });
     }
-
-    // const {
-    // message: { text }
-    // } = await $.waitForRequest;
   }
 
   /**
@@ -143,10 +139,6 @@ class GroupController extends TelegramBaseController {
     const telegramId = $.message.chat.id;
 
     $.sendMessage(`Okay `);
-
-    // const {
-    // message: { text }
-    // } = await $.waitForRequest;
   }
 
   /**
@@ -237,10 +229,10 @@ class GroupController extends TelegramBaseController {
       "Take Attendance": () => {
         attendanceController.takeAttendanceHandler($, group);
       },
-      Delete: () => {
+      "Delete": () => {
         this.deleteGroupHandler($, group);
       },
-      Rename: () => {
+      "Rename": () => {
         this.renameGroupHandler($, group);
       },
       "Add Student": () => {

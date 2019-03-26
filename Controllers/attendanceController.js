@@ -88,11 +88,6 @@ class AttendanceController extends TelegramBaseController {
    */
   async getAttendanceHandler($) {
     const ownerTelegramId = $.message.chat.id;
-    const group = await findUser({
-      name: groupName,
-      owner: { telegramId, name: userName }
-    });
-    const [{ name, students, sheet, owner }] = group;
     const [
       {
         spreadsheet: { url }
@@ -102,7 +97,7 @@ class AttendanceController extends TelegramBaseController {
 
     if (len(attendances)) {
       $.sendMessage(
-        `Okay click [the link](${url}/edit#gid=${id}) to view your attendance`,
+        `Okay click [the link](${url}/edit#gid=${0}) to view your attendance`,
         {
           parse_mode: "Markdown",
           reply_markup: JSON.stringify({
