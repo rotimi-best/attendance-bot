@@ -70,7 +70,16 @@ const addStudentsToSheet = async (spreadsheetId, SHEET, students) => {
   await updateSheet(spreadsheetId, SHEET, students);
 };
 
-const updateSheetWithLessonsMissed = async allAttendance => {
+const updateSheetWithLessonsMissed = async (
+  spreadsheetId,
+  SHEET,
+  allAttendance
+) => {
+  const columnDetails = {
+    start: 1,
+    end: 2,
+    alphRange: "!B1"
+  };
   const lessonsStats = {};
 
   for (let attendance of allAttendance) {
@@ -90,6 +99,8 @@ const updateSheetWithLessonsMissed = async allAttendance => {
   }
 
   const statsResult = ["Сколько пропусков", ...Object.values(lessonsStats)];
+
+  await updateSheet(spreadsheetId, SHEET, statsResult, columnDetails);
 
   return statsResult;
 };

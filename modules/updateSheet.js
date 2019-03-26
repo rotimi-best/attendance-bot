@@ -215,8 +215,16 @@ const getNextAlphRange = columnNo => {
   return nextCol;
 };
 
-const updateStatistics = async (spreadsheetId, SHEET, DATA, nextColumn) => {
-  const nextColNum = await getColumnNum(spreadsheetId, SHEET.name, nextColumn);
+const updateStatistics = async (
+  spreadsheetId,
+  SHEET,
+  DATA,
+  ifNextColumn,
+  columnDetails
+) => {
+  const nextColNum =
+    columnDetails ||
+    (await getColumnNum(spreadsheetId, SHEET.name, ifNextColumn));
 
   console.log("Next columns", nextColNum);
 
@@ -228,7 +236,10 @@ const updateStatistics = async (spreadsheetId, SHEET, DATA, nextColumn) => {
     nextColNum.end
   );
 
-  const nextAlphRange = getNextAlphRange(nextColNum.start);
+  const nextAlphRange = columnDetails
+    ? columnDetails.alphRange
+    : getNextAlphRange(nextColNum.start);
+
   console.log("Next nextAlphRange", nextAlphRange);
 
   const range = SHEET.name + nextAlphRange;
