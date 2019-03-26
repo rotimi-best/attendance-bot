@@ -73,9 +73,11 @@ class GroupController extends TelegramBaseController {
    * @param {Scope} $ Scope of message
    * @param {String} name Name of the group
    */
-  async getGroupHandler($, groupObj) {
+  async getGroupHandler($, groupObj, thisMethods) {
     const telegramId = $.message.chat.id;
-    const { userName } = await this.getUser(telegramId);
+    const { userName } = thisMethods
+      ? thisMethods.getUser(telegramId)
+      : await this.getUser(telegramId);
     const groupAlreadyExist = false;
 
     if (groupObj) {
@@ -113,7 +115,7 @@ class GroupController extends TelegramBaseController {
             const testIfText = /^Group/g.test(groupName);
             log("Test", testIfText);
 
-            const group = await getGroupHandler($, { groupName });
+            const group = await getGroupHandler($, { groupName }, thisMethods);
             log("group", group);
 
             if (testIfText && !group) {
@@ -253,7 +255,8 @@ class GroupController extends TelegramBaseController {
       renameGroupHandler: this.renameGroupHandler,
       addStudentsHandler: this.addStudentsHandler,
       deleteGroupHandler: this.deleteGroupHandler,
-      getGroupHandler: this.getGroupHandler
+      getGroupHandler: this.getGroupHandler,
+      getUser: this.getUser
     };
 
     const groups = await findGroup({
