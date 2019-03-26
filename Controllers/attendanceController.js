@@ -310,6 +310,7 @@ class AttendanceController extends TelegramBaseController {
               if (stud.studentName === studentName) {
                 stud.present = false;
               }
+              return stud;
             });
 
             await updateAttendance(
