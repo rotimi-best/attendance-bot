@@ -98,8 +98,6 @@ class AttendanceController extends TelegramBaseController {
     ] = await findUser({ telegramId: ownerTelegramId });
     const attendances = await findAttendance({ ownerTelegramId });
 
-    log(updateSheetWithLessonsMissed(attendances));
-
     // TODO: Replace 0 with the right id for group.
     if (len(attendances)) {
       $.sendMessage(
@@ -141,8 +139,10 @@ class AttendanceController extends TelegramBaseController {
       });
 
       if (len(allAttendance)) {
-        // This user has taken at least an attendance
-        const { groupName, result } = allAttendance[allAttendance.length - 1];
+        // Take the last attendance taken by this user
+        const { _id, groupName, result } = allAttendance[
+          allAttendance.length - 1
+        ];
         // Group
         const group = await findGroup({
           owner: { telegramId, name },
@@ -165,6 +165,7 @@ class AttendanceController extends TelegramBaseController {
             const { studentName } = absentStudent;
 
             this.updateStudentAttendance($, {
+              attendanceId: _id,
               studentName,
               telegramId,
               result,
@@ -188,6 +189,7 @@ class AttendanceController extends TelegramBaseController {
 
   updateStudentAttendance($, studentDetails) {
     const {
+      attendanceId,
       studentName,
       telegramId,
       result,
@@ -227,7 +229,7 @@ class AttendanceController extends TelegramBaseController {
             console.log("\n\nFinal result", newResult);
 
             await updateAttendance(
-              { ownerTelegramId: telegramId },
+              { _id: attendanceId },
               {
                 result: newResult
               }

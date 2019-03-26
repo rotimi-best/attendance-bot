@@ -78,7 +78,7 @@ const updateSheetWithLessonsMissed = async allAttendance => {
 
     for (let res of result) {
       const { studentName, present } = res;
-      const absentOrPresentNo = present ? 1 : 0;
+      const absentOrPresentNo = present ? 0 : 1;
 
       if (lessonsStats[studentName]) {
         lessonsStats[studentName] =
