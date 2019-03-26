@@ -166,19 +166,25 @@ class AttendanceController extends TelegramBaseController {
         const absentStudents = result.filter(student => !student.present);
         log("Absent students", absentStudents);
 
-        $.sendMessage(`Alright ${owner.name}, lets begin. `, {
-          reply_markup: JSON.stringify({
-            remove_keyboard: true
-          })
-        });
-
         if (len(absentStudents)) {
+          $.sendMessage(
+            `Хорошо ${owner.name}, редактируем последную перекличку в группе ${
+              group[0].name
+            }`,
+            {
+              reply_markup: JSON.stringify({
+                remove_keyboard: true
+              })
+            }
+          );
+
           for (const absentStudent of absentStudents) {
             const { studentName } = absentStudent;
 
             this.updateStudentAttendance($, {
               attendanceId: _id,
               studentName,
+              groupName,
               telegramId,
               result,
               spreadsheet,
@@ -187,15 +193,27 @@ class AttendanceController extends TelegramBaseController {
             await sleep(0.5);
           }
         } else {
-          log("You have no students in this group");
+          log("There was no absent student in this group");
+
+          $.sendMessage(`Не было отсутствующего студента в этой группе`, {
+            reply_markup: JSON.stringify({
+              remove_keyboard: true
+            })
+          });
         }
       } else {
-        $.sendMessage(
-          `No attendance yet, take an attendance to update the last one`
-        );
+        $.sendMessage(`Вы еще не сделали перекличку в этой группе`, {
+          reply_markup: JSON.stringify({
+            remove_keyboard: true
+          })
+        });
       }
     } else {
-      $.sendMessage(`You haven't signup yet. Click /start to begin`);
+      $.sendMessage(`Вы еще не создали акаунт, нажмите /start чтобы начинать`, {
+        reply_markup: JSON.stringify({
+          remove_keyboard: true
+        })
+      });
     }
   }
 
@@ -203,6 +221,7 @@ class AttendanceController extends TelegramBaseController {
     const {
       attendanceId,
       studentName,
+      groupName,
       telegramId,
       result,
       spreadsheet,
@@ -246,6 +265,16 @@ class AttendanceController extends TelegramBaseController {
                 result: newResult
               }
             );
+            const updatedAttendance = await findAttendance({
+              groupName,
+              ownerTelegramId: telegramId
+            });
+
+            await updateSheetWithLessonsMissed(
+              spreadsheet.id,
+              sheet,
+              updatedAttendance
+            );
 
             // Update Spreadsheet
             await pushAttendanceToSheet(
@@ -288,6 +317,16 @@ class AttendanceController extends TelegramBaseController {
               {
                 result: newResult
               }
+            );
+            const updatedAttendance = await findAttendance({
+              groupName,
+              ownerTelegramId: telegramId
+            });
+
+            await updateSheetWithLessonsMissed(
+              spreadsheet.id,
+              sheet,
+              updatedAttendance
             );
 
             // Update Spreadsheet
