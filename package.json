@@ -26,7 +26,7 @@
   "dependencies": {
     "dotenv": "^6.1.0",
     "googleapis": "^35.0.0",
-    "mongoose": "^5.3.14",
+    "mongoose": "^5.7.5",
     "mongoose-timestamp": "^0.6.0",
     "nodemon": "^1.18.10",
     "telegram-node-bot": "^4.0.5"
